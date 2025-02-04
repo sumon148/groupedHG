@@ -11,14 +11,6 @@ calculated using two alternative methods - analytic derivative (AD) and
 PMF-based. The PMF-based FI calculation is based on the Sánchez-Moreno,
 Yánez and Dehesa (2009).
 
-## Reference
-
-Sánchez-Moreno, P., Yánez, R. J., & Dehesa, J. S. (2009, October).
-Discrete densities and Fisher information. In Proceedings of the 14th
-International Conference on Difference Equations and Applications.
-Difference Equations and Applications. Istanbul, Turkey: Bahçesehir
-University Press (pp. 291-298).
-
 ## Installation
 
 You can install the development version of `groupedHG` like so:
@@ -99,3 +91,11 @@ legend("topleft",legend=c("Group","Item"),col=c("black","blue"),lty=c(1,2))
 ```
 
 <img src="man/figures/README-FI Item-1.png" width="100%" />
+
+## Reference
+
+Sánchez-Moreno, P., Yánez, R. J., & Dehesa, J. S. (2009, October).
+Discrete densities and Fisher information. In Proceedings of the 14th
+International Conference on Difference Equations and Applications.
+Difference Equations and Applications. Istanbul, Turkey: Bahçesehir
+University Press (pp. 291-298).
