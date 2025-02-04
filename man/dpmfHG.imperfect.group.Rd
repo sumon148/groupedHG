@@ -4,7 +4,7 @@
 \alias{dpmfHG.imperfect.group}
 \title{Derivative of PMF w.r.t Tx for Imperfect Group-Level Sensitivity and Specificity}
 \usage{
-dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda)
+dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE)
 }
 \arguments{
 \item{ty}{Integer. Number of identified contaminated groups (out of \eqn{b} total groups).}
@@ -20,6 +20,8 @@ dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda)
 \item{delta}{Numeric. Group-level false negative rate (\eqn{\delta}), the probability that a positive case is classified as negative (0 ≤ delta ≤ 1).}
 
 \item{lambda}{Numeric. Group-level false positive rate (\eqn{\lambda}), the probability that a negative case is classified as positive (0 ≤ lambda ≤ 1).}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The derivative of the computed PMF value w.r.t Tx adjusted for imperfect group-level sensitivity and specificity.

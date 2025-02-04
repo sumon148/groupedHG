@@ -12,7 +12,8 @@ FIpmfHG.Tx.imperfect(
   delta,
   lambda,
   method = c("AD", "ND", "PMF"),
-  type = c("group", "item")
+  type = c("group", "item"),
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ FIpmfHG.Tx.imperfect(
 \item{method}{Character. Method for computing Fisher Information. One of \code{"AD"} (analytic derivative), \code{"ND"} (numerical derivative), or \code{"PMF"} (PMF-based approximation).}
 
 \item{type}{Character. Detection type. One of \code{"group"} or \code{"item"}.}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The calculated Fisher Information.

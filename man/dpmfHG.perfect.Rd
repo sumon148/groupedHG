@@ -4,7 +4,7 @@
 \alias{dpmfHG.perfect}
 \title{Derivative of PMF w.r.t Tx (Perfect Case)}
 \usage{
-dpmfHG.perfect(ty, N, barN, Tx, b)
+dpmfHG.perfect(ty, N, barN, Tx, b, verbose = TRUE)
 }
 \arguments{
 \item{ty}{Integer. Number of groups with observed target outcomes.}
@@ -16,6 +16,8 @@ dpmfHG.perfect(ty, N, barN, Tx, b)
 \item{Tx}{Integer. Number of target individuals in the population.}
 
 \item{b}{Integer. Total number of groups.}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The derivative of the PMF for the perfect case.

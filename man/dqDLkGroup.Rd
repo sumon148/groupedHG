@@ -4,7 +4,7 @@
 \alias{dqDLkGroup}
 \title{Derivative of \eqn{q_{{\Delta\Lambda} k}} with respect to \eqn{T_x}}
 \usage{
-dqDLkGroup(k, N, Tx, barN, delta, lambda)
+dqDLkGroup(k, N, Tx, barN, delta, lambda, verbose = TRUE)
 }
 \arguments{
 \item{k}{Integer. Number of groups considered in the summation.}
@@ -18,6 +18,8 @@ dqDLkGroup(k, N, Tx, barN, delta, lambda)
 \item{delta}{Numeric. False negative rate (0 ≤ delta ≤ 1).}
 
 \item{lambda}{Numeric. False positive rate (0 ≤ lambda ≤ 1).}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The derivative of \eqn{q_{\Delta\Lambda k}} with respect to \eqn{T_x}.

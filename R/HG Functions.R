@@ -104,9 +104,10 @@ pmfHG.perfect <- function(ty, N, barN, Tx, b) {
 #' @param barN Numeric. Average group size.
 #' @param Tx Integer. Number of target individuals in the population.
 #' @param b Integer. Total number of groups.
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The derivative of the PMF for the perfect case.
 #' @export
-dpmfHG.perfect <- function(ty, N, barN, Tx, b) {
+dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
   # Calculate the PMF for the given inputs
   p_ty_given_Tx <- pmfHG.perfect(ty, N, barN, Tx, b)
 
@@ -135,13 +136,14 @@ dpmfHG.perfect <- function(ty, N, barN, Tx, b) {
         # Inclusion-exclusion term with alternating signs
         term <- (-1)^(ty - j) * inner_binomial * der_hypergeo_prob
 
+        if (verbose){
         # Debugging output for intermediate values (optional)
         cat("  j =", j,
             "| inner_binomial =", inner_binomial,
             "| hypergeo_prob =", hypergeo_prob,
             "| digamma_term =", digamma_term,
             "| term =", term, "\n")
-
+        }
         # Accumulate the term in the sum
         sum_inclusion_exclusion <- sum_inclusion_exclusion + term
       }
@@ -288,11 +290,12 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
 #' @param barN Numeric. Average group size.
 #' @param delta Numeric. False negative rate (0 ≤ delta ≤ 1).
 #' @param lambda Numeric. False positive rate (0 ≤ lambda ≤ 1).
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The derivative of \eqn{q_{\Delta\Lambda k}} with respect to \eqn{T_x}.
 #' @name dqDLkGroup
 #' @rdname dqDLkGroup
 #' @export
-dqDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
+dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
   # Step 1: Function Purpose
   # This function calculates the derivative of q_{Delta, Lambda, k} with respect to T_x for the grouped case.
   # The calculation follows Equation 26, considering a grouped population model with false negative and false positive rates.
@@ -345,11 +348,13 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
         term <- (-1)^i * choose_custom(ell, i) * d_hypergeo_Tx
         inner_sum <- inner_sum + term  # Accumulate the result.
       } else {
+        if (verbose) {
         # Step 12: Skip Invalid Terms
         # Print a message for skipped terms with invalid exclusion populations.
         cat("Skipping invalid term: ell =", ell, "i =", i,
             "| exclusion_population =", exclusion_population,
             "| Tx =", Tx, "\n")
+        }
       }
     }
 
@@ -378,12 +383,13 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
 #' @param b Integer. Total number of groups.
 #' @param delta Numeric. Group-level false negative rate (\eqn{\Delta}), the probability that a positive case is classified as negative (0 ≤ delta ≤ 1).
 #' @param lambda Numeric. Group-level false positive rate (\eqn{\Lambda}), the probability that a negative case is classified as positive (0 ≤ lambda ≤ 1).
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The computed PMF value adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
 #' pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
 #' @export
-pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
+pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
   # Binomial coefficient for selecting t_y groups from b total groups
   outer_binomial <- choose_custom(b, ty)
 
@@ -406,12 +412,15 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
       # Add the term to the summation for inclusion-exclusion
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
     } else {
+
+      if (verbose) {
       # Debug message for invalid terms where the exclusion population is not sufficient
       cat("Skipping invalid term: j =", j,
           "| exclusion_population =", exclusion_population,
           "| Tx =", Tx, "\n")
     }
   }
+}
 
   # Multiply the result of the inclusion-exclusion summation by the outer binomial coefficient to get the final PMF
   pmf <- outer_binomial * sum_inclusion_exclusion
@@ -438,12 +447,13 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
 #' @param b Integer. Total number of groups.
 #' @param delta Numeric. Group-level false negative rate (\eqn{\delta}), the probability that a positive case is classified as negative (0 ≤ delta ≤ 1).
 #' @param lambda Numeric. Group-level false positive rate (\eqn{\lambda}), the probability that a negative case is classified as positive (0 ≤ lambda ≤ 1).
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The derivative of the computed PMF value w.r.t Tx adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
 #' pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
 #' @export
-dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
+dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
   # Derivative of PMF with respect to Tx (following Equation 26)
   # This function calculates the derivative of the PMF for group-level sensitivity and specificity
   # based on the provided parameters. It handles the inclusion-exclusion principle and adjusts for
@@ -458,7 +468,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
   # Lambda: False positive rate (probability of a true negative being falsely identified as positive)
 
   # Calculate the PMF first using the existing function
-  pmf <- pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda)
+  pmf <- pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
 
   # Use a stricter threshold to avoid calculating derivatives for zero PMF
   if (pmf > 0) {
@@ -473,7 +483,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
     # Loop over possible values of j (number of excluded groups)
     for (j in 0:ty) {
       # Compute the derivative of q(Delta, Lambda) with respect to Tx for the current value of j
-      dq_Delta_Lambda_derivative <- dqDLkGroup(b - j, N, Tx, barN, delta, lambda)
+      dq_Delta_Lambda_derivative <- dqDLkGroup(b - j, N, Tx, barN, delta, lambda,verbose)
 
       # Update the sum for the inclusion-exclusion principle, applying the appropriate sign
       sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative +
@@ -483,10 +493,13 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
     # Final derivative of the PMF: Multiply the outer binomial coefficient by the summation
     pmf_derivative <- outer_binomial * sum_inclusion_exclusion_derivative
   } else {
+    if(verbose) {
     # Debug message: If PMF is effectively zero, skip derivative calculation
     cat("PMF is effectively zero for ty =", ty, ", Tx =", Tx,
         ". Returning derivative as 0.\n")
+    }
     pmf_derivative <- 0  # If PMF is zero, the derivative is also zero
+
   }
 
   # Return the derivative of the PMF
@@ -508,12 +521,13 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda) {
 #' @param delta Numeric. False negative rate (item level).
 #' @param lambda Numeric. False positive rate (item level).
 #' @return Numeric. The computed value of \eqn{q_{\delta\lambda k} }.
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @name qdlkItem
 #' @rdname qdlkItem
 #' @examples
 #' qdlkqdlkItem(k = 3, N = 100, Tx = 5, barN = 10, delta = 0.1, lambda = 0.05)
 #' @export
-qdlkItem <- function(k, N, Tx, barN, delta, lambda) {
+qdlkItem <- function(k, N, Tx, barN, delta, lambda, verbose=TRUE) {
   # Function to compute qδλk for item-level sensitivity and specificity (Equation 13)
   # qdlk: For Item case
   # qΔΛk : Probability that none are identified as contaminated
@@ -552,11 +566,13 @@ qdlkItem <- function(k, N, Tx, barN, delta, lambda) {
       # Add the product of the hypergeometric term and probability term to the sum
       q_delta_lambda_item_k <- q_delta_lambda_item_k + hypergeo_term * probability_term
     } else {
-      # Debug message for invalid terms
-      cat("Skipping invalid term: X_hat_k =", X_hat_k,
-          "| exclusion_population =", exclusion_population,
-          "| required_items =", required_items,
-          "| Tx =", Tx, "\n")
+      if (verbose) {
+        # Debug message for invalid terms
+        cat("Skipping invalid term: X_hat_k =", X_hat_k,
+            "| exclusion_population =", exclusion_population,
+            "| required_items =", required_items,
+            "| Tx =", Tx, "\n")
+      }
     }
   }
 
@@ -642,10 +658,11 @@ dqdlkItem <- function(k, N, Tx, barN, delta, lambda) {
 #' @param delta Numeric. False negative rate (item level probability of a true positive being missed).
 #' @param lambda Numeric. False positive rate (item level probability of a true negative being falsely identified as positive).
 #' @return Numeric. The computed probability mass function value.
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @examples
 #' pmfHG.imperfect.item(ty = 2, N = 100, barN = 10, Tx = 5, b = 5, delta = 0.1, lambda = 0.05)
 #' @export
-pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
+pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
   # Function to calculate PMF (Probability Mass Function) with item-level sensitivity and specificity.
   # This corresponds to Equation 13 and computes the probability for a given number of contaminated items (ty).
 
@@ -672,7 +689,7 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
     if (exclusion_population >= Tx) {
 
       # Compute the item-level q_delta_lambda term (Equation 27) for the current contamination level
-      q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda)
+      q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda,verbose)
 
       # Compute the term for inclusion-exclusion
       # The term adjusts for how many items are included or excluded from the contamination set
@@ -681,10 +698,12 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
       # Add the term to the summation
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
     } else {
-      # If the exclusion population is invalid, skip this term and print debug information
-      cat("Skipping invalid term: j =", j,
-          "| exclusion_population =", exclusion_population,
-          "| Tx =", Tx, "\n")
+      if (verbose) {
+        # If the exclusion population is invalid, skip this term and print debug information
+        cat("Skipping invalid term: j =", j,
+            "| exclusion_population =", exclusion_population,
+            "| Tx =", Tx, "\n")
+      }
     }
   }
 
@@ -717,8 +736,9 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
 #' @examples
 #' dpmfHG.imperfect.item(ty = 3, N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05)
 #' @export
-dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
-  pmf <- pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
+dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
+
+  pmf <- pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose )
 
   if (pmf > 0) {
     outer_binomial <- choose_custom(b, ty)
@@ -755,11 +775,12 @@ dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda) {
 #' @param lambda Numeric. False positive rate.
 #' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), or `"PMF"` (PMF-based approximation).
 #' @param type Character. Detection type. One of `"group"` or `"item"`.
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The calculated Fisher Information.
 #' @examples
 #' FIpmfHG.Tx.imperfect(N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05, method = "AD", type = "item")
 #' @export
-FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF"), type = c("group", "item")) {
+FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF"), type = c("group", "item"),verbose=TRUE) {
   FI_Tx <- 0
   method <- match.arg(method)
   type <- match.arg(type)
@@ -768,18 +789,18 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
     if (ty > Tx && delta == 1 && lambda == 1) next
 
     P_ty <- if (type == "group") {
-      pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda)
+      pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
     } else {
-      pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
+      pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda,verbose)
     }
 
     if (P_ty == 0) next
 
     if (method == "AD") {
       dP_Tx <- if (type == "group") {
-        dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda)
+        dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
       } else {
-        dpmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
+        dpmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose)
       }
 
       FI_Tx <- FI_Tx + (dP_Tx^2 / P_ty)
@@ -787,9 +808,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 
     if (method == "PMF") {
       P_ty_Tx_plus1 <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda)
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda)
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_ty_Tx_plus1 > 0 && P_ty > 0) {
@@ -799,9 +820,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 
     if (method == "ND") {
       P_plus <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda)
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda)
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_plus > 0 && P_ty > 0) {

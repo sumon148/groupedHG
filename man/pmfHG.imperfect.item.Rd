@@ -4,7 +4,7 @@
 \alias{pmfHG.imperfect.item}
 \title{Probability Mass Function (PMF) for Imperfect Item-Level Sensitivity and Specificity}
 \usage{
-pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
+pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE)
 }
 \arguments{
 \item{ty}{Integer. Number of identified contaminated groups (out of total \eqn{b} groups).}
@@ -20,6 +20,8 @@ pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
 \item{delta}{Numeric. False negative rate (item level probability of a true positive being missed).}
 
 \item{lambda}{Numeric. False positive rate (item level probability of a true negative being falsely identified as positive).}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The computed probability mass function value.

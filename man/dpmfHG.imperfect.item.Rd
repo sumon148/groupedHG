@@ -4,7 +4,7 @@
 \alias{dpmfHG.imperfect.item}
 \title{Derivative of PMF for Imperfect Item-Level Detection}
 \usage{
-dpmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda)
+dpmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE)
 }
 \arguments{
 \item{ty}{Integer. Number of identified contaminated groups (out of total \code{b} groups).}

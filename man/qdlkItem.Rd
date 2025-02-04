@@ -4,7 +4,7 @@
 \alias{qdlkItem}
 \title{Compute \eqn{q_{\delta \lambda k} } for Item-Level Sensitivity and Specificity}
 \usage{
-qdlkItem(k, N, Tx, barN, delta, lambda)
+qdlkItem(k, N, Tx, barN, delta, lambda, verbose = TRUE)
 }
 \arguments{
 \item{k}{Integer. Number of groups considered in the summation.}
@@ -18,6 +18,8 @@ qdlkItem(k, N, Tx, barN, delta, lambda)
 \item{delta}{Numeric. False negative rate (item level).}
 
 \item{lambda}{Numeric. False positive rate (item level).}
+
+\item{verbose}{Logical. If TRUE, prints conditions that are not fulfilled.}
 }
 \value{
 Numeric. The computed value of \eqn{q_{\delta\lambda k} }.

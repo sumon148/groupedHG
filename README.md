@@ -1,20 +1,17 @@
-<<<<<<< HEAD
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # groupedHG
 
-<!-- badges: start -->
-<!-- badges: end -->
-
 The goal of **groupedHG** is to estimate probability mass function (PMF)
 for grouped hypergeometric distribution considering adjustment for
-sensitivity and specificity of the test. In addition to this, Fisher
-Information of PMF with respect to the total number of contaminated
-items assumed in the population (denoted as $T_x$) can be calculated
-using two alternative methods - analytic derivative (AD) and PMF based.
-The PMF based FI calculation is based on the Sánchez-Moreno, Yánez and
-Dehesa (2009) paper on discrete densities and Fisher information.
+sensitivity and specificity of the test. The sensitivity and specificity
+can be considered at the item and group level. In addition to this,
+Fisher Information (FI) of PMF with respect to the total number of
+contaminated items assumed in the population (denoted as $T_x$) can be
+calculated using two alternative methods - analytic derivative (AD) and
+PMF-based. The PMF-based FI calculation is based on the Sánchez-Moreno,
+Yánez and Dehesa (2009).
+
+## Reference
 
 Sánchez-Moreno, P., Yánez, R. J., & Dehesa, J. S. (2009, October).
 Discrete densities and Fisher information. In Proceedings of the 14th
@@ -24,7 +21,7 @@ University Press (pp. 291-298).
 
 ## Installation
 
-You can install the development version of mypackage like so:
+You can install the development version of `groupedHG` like so:
 
 ``` r
 install.packages("devtools")
@@ -43,7 +40,7 @@ group-level imperfect sensitivity ($\Delta=0.7$) and specificity
 library(groupedHG)
 b=4
 ty.values <- c(0:b)
-PRty.HG.group <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8))
+PRty.HG.group <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8,verbose = FALSE))
 plot(0:b, PRty.HG.group, type = "l", col = "black", xlab=expression(paste("Number of group detections, ", t[y])),
      ylab = "Probability mass", main = "Grouped Hypergeometric model",lty=2)
 points(0:b,PRty.HG.group,type = "b", pch = 19, col = "black")
@@ -55,37 +52,50 @@ In the similar way, the PMF can be calculated assuming item-level
 imperfect test as below:
 
 ``` r
-PRty.HG.item <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8))
-plot(0:b, PRty.HG.item, type = "l", col = "black", xlab=expression(paste("Number of group detections, ", t[y])),
-     ylab = "Probability mass", main = "Grouped Hypergeometric model",lty=2)
-points(0:b,PRty.HG.item,type = "b", pch = 19, col = "black")
+PRty.HG.item <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8,verbose =FALSE))
+PRty.HG.item
+#> [1] 0.002993711 0.040346066 0.198811210 0.424987223 0.332861789
 ```
 
-<img src="man/figures/README-PMF HG Item-1.png" width="100%" />
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+Expectation and variance of the grouped HG distribution for the number
+of contaminated groups can be obtained as below:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+ExpVarHG.imperfect.item <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=0.70, lambda=0.8,type="item")
+ExpVarHG.imperfect.item$expectation
+#> [1] 3.044377
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+``` r
+ExpVarHG.imperfect.item$variance
+#> [1] 0.7180313
+```
 
-You can also embed plots, for example:
+``` r
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+ExpVarHG.perfect.group <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=1, lambda=1,type="group")
+ExpVarHG.perfect.group$expectation
+#> [1] 2.386647
+```
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
-=======
-# groupedHG
->>>>>>> 6faa7fbaad220829859a5b2f78bebfba717c0bf8
+``` r
+ExpVarHG.perfect.group$variance
+#> [1] 0.8797255
+```
+
+The Fisher Information of PMF with respect to given number of
+contaminated items in the population $T_x$ assuming group and item level
+imperfect sensitivity and specificity can be calculated as below:
+
+``` r
+Tx_values <- c(0:80)
+# Different cases: Item level sensitivity
+FI_case1_AD_Based_group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "group",verbose=FALSE))
+FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item",verbose=FALSE))
+plot(Tx_values, FI_case1_AD_Based_group, type = "l", col = "black", xlab=expression(paste("Number of Contaminated Items, ", T[x])),
+     ylab = "Fisher Information: Hypergeometric", main = "FI under HG: Group and item level imperfect test",lty=2)
+lines(Tx_values,FI_case1_AD_Based_Item,type = "l", lty = 2, col = "blue")
+legend("topleft",legend=c("Group","Item"),col=c("black","blue"),lty=c(1,2))
+```
+
+<img src="man/figures/README-FI Item-1.png" width="100%" />
