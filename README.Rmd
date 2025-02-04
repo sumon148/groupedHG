@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 
 # groupedHG
 
-The goal of **groupedHG** is to estimate probability mass function (PMF) for grouped hypergeometric distribution considering adjustment for sensitivity and specificity of the test. The sensitivity and specificity can be considered at the item and group level. In addition to this, Fisher Information (FI) of PMF with respect to the total number of contaminated items assumed in the population (denoted as $T_x$) can be calculated using two alternative methods - analytic derivative (AD) and PMF-based. The PMF-based FI calculation is based on the Sánchez-Moreno, Yánez and Dehesa (2009).
+The goal of **groupedHG** is to estimate probability mass function (PMF) for grouped hypergeometric distribution considering adjustment for sensitivity and specificity of the test. The sensitivity and specificity can be considered at the item and group level. In addition to this, Fisher Information (FI) of the total number of contaminated items in the population (denoted as $T_x$) can be calculated using two alternative methods - analytic derivative (AD) and PMF-based. The PMF-based FI calculation is based on the Sánchez-Moreno, Yánez and Dehesa (2009) work.
 
 
 
@@ -58,7 +58,7 @@ ExpVarHG.perfect.group <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=1,
 ExpVarHG.perfect.group$expectation
 ExpVarHG.perfect.group$variance
 ```
-The Fisher Information of PMF with respect to given number of contaminated items in the population $T_x$ assuming group and item level imperfect sensitivity and specificity can be calculated as below:
+The Fisher Information for the number of contaminated items in the population $T_x$ can be calculated as below assuming group and item level imperfect sensitivity and specificity:
 
 ```{r FI Item, warning=FALSE,echo=TRUE, message=FALSE}
 Tx_values <- c(0:80)
@@ -68,7 +68,7 @@ FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx
 plot(Tx_values, FI_case1_AD_Based_group, type = "l", col = "black", xlab=expression(paste("Number of Contaminated Items, ", T[x])),
      ylab = "Fisher Information: Hypergeometric", main = "FI under HG: Group and item level imperfect test",lty=2)
 lines(Tx_values,FI_case1_AD_Based_Item,type = "l", lty = 2, col = "blue")
-legend("topleft",legend=c("Group","Item"),col=c("black","blue"),lty=c(1,2))
+legend("topright",legend=c("Group","Item"),col=c("black","blue"),lty=c(1,2),bty = "n")
 ```
 
 ## Reference
