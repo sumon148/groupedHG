@@ -1,16 +1,27 @@
 Package: groupedHG
-Title: Estimation of Grouped Hypergeometric Distribution under Imperfect Tests
 Version: 0.0.0.9000
 Authors@R: 
     person("Sumonkanti", "Das", , "sumonkanti.das@anu.edu.au", role = c("aut", "cre"))
-Description: The package estimates the probability mass function (PMF) for the grouped hypergeometric (HG) distribution under imperfect tests. It calculates derivatives of the PMF with respect to the number of contaminated items (\eqn{T_x}), accounting for item- and group-level sensitivity and specificity. The package also supports calculations assuming a binomial approximation of the grouped HG distribution.
-License: MIT + file LICENSE
+Authors@R: 
+    c(
+      person("Sumonkanti", "Das", email = "sumonkanti.das@anu.edu.au", role = c("aut", "cre")),
+      person("Barnes", "Belinda", email = "Belinda.Barnes@aff.gov.au", role = "aut"),
+      person("Mahdi", "Parsa", email = "Mahdi.Parsa@aff.gov.au", role = "aut")
+    )
+Title: Grouped Hypergeometric Distribution
 Encoding: UTF-8
+Type: License
+License: GPL-3
+LazyLoad: yes
+Description: The package estimates the probability mass function (PMF) for the grouped hypergeometric (HG) distribution under imperfect tests. It calculates derivatives of the PMF with respect to the number of contaminated items (\eqn{T_x}), accounting for item- and group-level sensitivity and specificity. The package also supports calculations assuming a binomial approximation of the grouped HG distribution.
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends: R (>= 4.1.0)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat, Roxygen2, knitr,
+        rmarkdown
 Config/testthat/edition: 3
 Imports: 
     dplyr,
     ggplot2
+VignetteBuilder: knitr
