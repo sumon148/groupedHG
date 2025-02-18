@@ -12,6 +12,8 @@ factorial_custom <- function(n) {
   return(prod(1:n))
 }
 
+
+
 #' Binomial Coefficient
 #'
 #' Function to calculate the binomial coefficient (\code{n choose k}).
@@ -26,6 +28,24 @@ choose_custom <- function(n, k) {
   if (k > n || k < 0) return(0)
   return(factorial_custom(n) / (factorial_custom(k) * factorial_custom(n - k)))
 }
+
+
+#' Binomial Coefficient: log-gamma  form
+#'
+#' Function to calculate the binomial coefficient (\code{n choose k}) in log-gamma  form.
+#' @param n The number of items.
+#' @param k The number of items to choose.
+#' @return The binomial coefficient (\code{n choose k}). Returns 0 if \code{k > n} or \code{k < 0}.
+#' @examples
+#' choose_custom_log(5, 2) # Returns 10
+#' choose_custom_log(5, 6) # Returns 0
+#' @export
+choose_custom_log <- function(n, k) {
+  if (k > n || k < 0) return(0)  # Handle invalid cases
+  exp(lgamma(n + 1) - (lgamma(k + 1) + lgamma(n - k + 1)))
+}
+
+
 
 #' Safe Digamma Function
 #'
@@ -58,7 +78,7 @@ safe_digamma <- function(x) {
 #' @export
 pmfHG.perfect <- function(ty, N, barN, Tx, b) {
   # Initialize the outer binomial coefficient
-  outer_binomial <- choose_custom(b, ty)  # Binomial coefficient for selecting t_y groups
+  outer_binomial <- choose_custom_log(b, ty)  # Binomial coefficient for selecting t_y groups
 
   # Initialize the summation for inclusion-exclusion
   sum_inclusion_exclusion <- 0
@@ -66,29 +86,35 @@ pmfHG.perfect <- function(ty, N, barN, Tx, b) {
   # Loop through each subset of groups to apply inclusion-exclusion
   for (j in 0:ty) {
     # Calculate the binomial coefficient for selecting j groups from ty
-    inner_binomial <- choose_custom(ty, j)
+    inner_binomial <- choose_custom_log(ty, j)
 
     # Calculate the remaining population size after excluding certain groups
     exclusion_population <- N - barN * (b - j)
 
     # Check if the exclusion population is large enough to support Tx
-    if (exclusion_population >= Tx) {
-      # Compute the hypergeometric probability
-      hypergeo_prob <- choose_custom(exclusion_population, Tx) / choose_custom(N, Tx)
 
+
+    if (exclusion_population < 0) {
+      next  # Skip this iteration as the exclusion population is invalid
+    } else if (exclusion_population == Tx && Tx == 0) {
+      hypergeo_prob <- 1  # Set to 1 when both are zero
+    } else if (exclusion_population >= Tx) {
+      # Compute the hypergeometric probability
+      hypergeo_prob <- choose_custom_log(exclusion_population, Tx) / choose_custom_log(N, Tx)
+    }
       # Calculate the inclusion-exclusion term
       term <- (-1)^(ty - j) * inner_binomial * hypergeo_prob
 
       # Add the term to the summation
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
     }
-  }
+
 
   # Compute the final PMF value
   pmf <- outer_binomial * sum_inclusion_exclusion
 
   # Apply a threshold for small probabilities to prevent numerical instability
-  if (abs(pmf) < 1e-12) pmf <- 0
+  if (abs(pmf) < 1e-5) pmf <- 0
 
   # Return the computed PMF value
   return(pmf)
@@ -111,43 +137,56 @@ dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
   # Calculate the PMF for the given inputs
   p_ty_given_Tx <- pmfHG.perfect(ty, N, barN, Tx, b)
 
+  if (ty > b || ty > Tx && p_ty_given_Tx==0) {  # ty must be <= min(b, Tx) in perfect case
+    return(0)
+  }
+
   # If the PMF is zero, the derivative is also zero
   if (p_ty_given_Tx > 0) {
     # Binomial coefficient for selecting t_y groups out of b
-    outer_binomial <- choose_custom(b, ty)
+    outer_binomial <- choose_custom_log(b, ty)
     # Initialize the sum for the inclusion-exclusion principle
     sum_inclusion_exclusion <- 0
 
     # Iterate over subsets (j = 0 to ty) to compute inclusion-exclusion terms
     for (j in 0:ty) {
       # Binomial coefficient for selecting j groups out of ty
-      inner_binomial <- choose_custom(ty, j)
+      inner_binomial <- choose_custom_log(ty, j)
       # Size of the population excluding j groups
       group_size <- barN * (b - j)
       exclusion_population <- N - group_size
 
-      # Check if the remaining population can accommodate Tx targets
-      if (exclusion_population >= Tx) {
+      # Handle special cases
+      if (exclusion_population < 0) {
+        next  # Skip this iteration as the exclusion population is invalid
+      } else if (exclusion_population == Tx && Tx == 0) {
+        der_hypergeo_prob <- 1  # Set to 1 when both are zero
+      } else if (exclusion_population >= Tx) {
         # Calculate the hypergeometric probability for the excluded population
-        hypergeo_prob <- choose_custom(exclusion_population, Tx) / choose_custom(N, Tx)
+        hypergeo_prob <- choose_custom_log(N-Tx, group_size) / choose_custom_log(N, group_size)
         # Compute the derivative term using the digamma function
-        digamma_term <- safe_digamma(N - Tx - group_size + 1) - safe_digamma(N - Tx + 1)
+        digamma_term <- safe_digamma(N - Tx - group_size + 1) - safe_digamma(N - Tx + 1) # paper
+        # digamma_term <- safe_digamma(N - Tx + 1) - safe_digamma(N - Tx - group_size + 1) - safe_digamma(Tx + 1) # ChatGPT
         der_hypergeo_prob <- hypergeo_prob * digamma_term
-        # Inclusion-exclusion term with alternating signs
-        term <- (-1)^(ty - j) * inner_binomial * der_hypergeo_prob
-
+      } else {
         if (verbose){
-        # Debugging output for intermediate values (optional)
-        cat("  j =", j,
-            "| inner_binomial =", inner_binomial,
-            "| hypergeo_prob =", hypergeo_prob,
-            "| digamma_term =", digamma_term,
-            "| term =", term, "\n")
+          # Debugging output for intermediate values (optional)
+          cat("  j =", j,
+              "| inner_binomial =", inner_binomial,
+              "| hypergeo_prob =", hypergeo_prob,
+              "| digamma_term =", digamma_term,
+              "| term =", term, "\n")
         }
-        # Accumulate the term in the sum
-        sum_inclusion_exclusion <- sum_inclusion_exclusion + term
+        next
       }
+
+      # Inclusion-exclusion term with alternating signs
+      term <- (-1)^(ty - j) * inner_binomial * der_hypergeo_prob
+
+      # Accumulate the term in the sum
+      sum_inclusion_exclusion <- sum_inclusion_exclusion + term
     }
+
 
     # Final derivative is the product of the outer binomial and the sum of terms
     der_pmf <- outer_binomial * sum_inclusion_exclusion
@@ -186,7 +225,7 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND", "PMF")) {
 
   for (ty in 0:b) {
     # Skip invalid cases where ty > Tx
-    if (ty > Tx) next
+    if (ty > b || ty > Tx) next
 
     # PMF for ty given Tx
     P_ty <- pmfHG.perfect(ty, N, barN, Tx, b)
@@ -244,7 +283,7 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
   }
 
   # Precompute constant values
-  total_choose <- choose_custom(N, Tx)
+  total_choose <- choose_custom_log(N, Tx)
 
   # Initialize q_Delta_Lambda_k to 0
   q_Delta_Lambda_k <- 0
@@ -259,11 +298,12 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
       # Calculate the exclusion population size
       exclusion_population <- N - barN * (k - (ell - i))
 
-      # Check if the exclusion population is valid for hypergeometric probability
+
+    # Check if the exclusion population is valid for hypergeometric probability
       if (exclusion_population >= Tx) {
         # Compute the term for this combination of ell and i
-        term <- (-1)^i * choose_custom(ell, i) *
-          (choose_custom(exclusion_population, Tx) / total_choose)
+        term <- (-1)^i * choose_custom_log(ell, i) *
+          (choose_custom_log(exclusion_population, Tx) / total_choose)
 
         # Add the term to the inner summation
         inner_sum <- inner_sum + term
@@ -271,7 +311,7 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
     }
 
     # Add the contribution from the current ell to q_Delta_Lambda_k
-    q_Delta_Lambda_k <- q_Delta_Lambda_k + choose_custom(k, ell) * inner_sum *
+    q_Delta_Lambda_k <- q_Delta_Lambda_k + choose_custom_log(k, ell) * inner_sum *
       (1 - delta)^ell * lambda^(k - ell)
   }
 
@@ -335,32 +375,32 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
       if (exclusion_population >= Tx) {
         # Step 9: Calculate the Hypergeometric Term
         # Compute the hypergeometric probability term for the given parameters.
-        hypergeo_term <- choose_custom(exclusion_population, Tx) / choose_custom(N, Tx)
+        hypergeo_term <- choose_custom_log(exclusion_population, Tx) / choose_custom_log(N, Tx)
 
         # Step 10: Derivative of Hypergeometric Term
         # Compute the derivative of the hypergeometric term using the digamma function.
         d_hypergeo_Tx <- hypergeo_term * (
-          safe_digamma(N - Tx - k * barN + 1) - safe_digamma(N - Tx + 1)
+          safe_digamma(N - Tx - (k - (ell - i)) * barN + 1) - safe_digamma(N - Tx + 1)
         )
 
         # Step 11: Contribution from Inner Summation
         # Calculate the contribution of the current term in the inner summation.
-        term <- (-1)^i * choose_custom(ell, i) * d_hypergeo_Tx
+        term <- (-1)^i * choose_custom_log(ell, i) * d_hypergeo_Tx
         inner_sum <- inner_sum + term  # Accumulate the result.
       } else {
         if (verbose) {
-        # Step 12: Skip Invalid Terms
-        # Print a message for skipped terms with invalid exclusion populations.
-        cat("Skipping invalid term: ell =", ell, "i =", i,
-            "| exclusion_population =", exclusion_population,
-            "| Tx =", Tx, "\n")
+          # Step 12: Skip Invalid Terms
+          # Print a message for skipped terms with invalid exclusion populations.
+          cat("Skipping invalid term: ell =", ell, "i =", i,
+              "| exclusion_population =", exclusion_population,
+              "| Tx =", Tx, "\n")
         }
       }
     }
 
     # Step 13: Combine Inner Sum with Outer Sum
     # Combine the result of the inner summation with the outer summation.
-    dq_Delta_Lambda_k <- dq_Delta_Lambda_k + choose_custom(k, ell) * inner_sum *
+    dq_Delta_Lambda_k <- dq_Delta_Lambda_k + choose_custom_log(k, ell) * inner_sum *
       (1 - delta)^ell * lambda^(k - ell)
   }
 
@@ -368,7 +408,6 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
   # Return the calculated derivative value.
   return(dq_Delta_Lambda_k)
 }
-
 
 
 #' PMF for Imperfect Group-Level Sensitivity and Specificity
@@ -390,8 +429,15 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
 #' pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
 #' @export
 pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
+
+  pmf <- 0 # % Initialize the probability to zero
+
+  if (ty > b || ty > Tx && lambda==1) {  # ty must be <= min(b, Tx) when lambda ==1
+    return(c(pmf))
+  }
+
   # Binomial coefficient for selecting t_y groups from b total groups
-  outer_binomial <- choose_custom(b, ty)
+  outer_binomial <- choose_custom_log(b, ty)
 
   # Initialize the summation for inclusion-exclusion
   sum_inclusion_exclusion <- 0
@@ -407,7 +453,7 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
       q_Delta_Lambda <- qDLkGroup(b - j, N, Tx, barN, delta, lambda)
 
       # Calculate the term for inclusion-exclusion and adjust the sign based on j
-      term <- (-1)^(ty - j) * choose_custom(ty, j) * q_Delta_Lambda
+      term <- (-1)^(ty - j) * choose_custom_log(ty, j) * q_Delta_Lambda
 
       # Add the term to the summation for inclusion-exclusion
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
@@ -426,7 +472,7 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
   pmf <- outer_binomial * sum_inclusion_exclusion
 
   # Apply a threshold for small probabilities (numerical stability)
-  if (abs(pmf) < 1e-12) pmf <- 0
+  if (abs(pmf) < 1e-5) pmf <- 0
 
   # Return the final computed PMF
   return(pmf)
@@ -475,7 +521,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = 
     # Proceed with derivative calculation only if PMF is non-zero
 
     # Binomial coefficient for selecting ty groups from the b total groups
-    outer_binomial <- choose_custom(b, ty)
+    outer_binomial <- choose_custom_log(b, ty)
 
     # Initialize the summation for the inclusion-exclusion derivative
     sum_inclusion_exclusion_derivative <- 0
@@ -487,7 +533,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = 
 
       # Update the sum for the inclusion-exclusion principle, applying the appropriate sign
       sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative +
-        (-1)^(ty - j) * choose_custom(ty, j) * dq_Delta_Lambda_derivative
+        (-1)^(ty - j) * choose_custom_log(ty, j) * dq_Delta_Lambda_derivative
     }
 
     # Final derivative of the PMF: Multiply the outer binomial coefficient by the summation
@@ -557,8 +603,8 @@ qdlkItem <- function(k, N, Tx, barN, delta, lambda, verbose=TRUE) {
 
       # Hypergeometric term: choosing X_hat_k contaminated items from the k*barN possible items
       # and the remaining required items from the exclusion population
-      hypergeo_term <- choose_custom(k * barN, X_hat_k) *
-        (choose_custom(exclusion_population, required_items) / choose_custom(N, Tx))
+      hypergeo_term <- choose_custom_log(k * barN, X_hat_k) *
+        (choose_custom_log(exclusion_population, required_items) / choose_custom_log(N, Tx))
 
       # Probability term: adjusting for false negative rate (delta) and false positive rate (lambda)
       probability_term <- (1 - delta)^X_hat_k * lambda^(k * barN - X_hat_k)
@@ -621,15 +667,23 @@ dqdlkItem <- function(k, N, Tx, barN, delta, lambda) {
       # Hypergeometric term:
       # This calculates the probability of selecting X_hat_k contaminated items from the k*barN items
       # and the required number of non-contaminated items from the exclusion population
-      hypergeo_term <- choose_custom(k * barN, X_hat_k) *
-        (choose_custom(exclusion_population, required_items) / choose_custom(N, Tx))
+      # Based on PMF form
+      # hypergeo_term <- choose_custom_log(k * barN, X_hat_k) * (choose_custom_log(exclusion_population, required_items) / choose_custom_log(N, Tx))
+      # Based on alternative probability form
+      hypergeo_term <- choose_custom_log(Tx, X_hat_k) * (choose_custom_log(N-Tx, k * barN - X_hat_k) / choose_custom_log(N, k * barN))
 
       # Derivative of the hypergeometric term with respect to Tx
       # The derivative is calculated using the digamma function, which is the derivative of the logarithm of the gamma function
       # This term accounts for how the probability changes as the number of contaminated items Tx changes
-      d_hypergeo_Tx <- hypergeo_term * (
-        safe_digamma(Tx - X_hat_k + 1) - safe_digamma(Tx + 1) +
-          safe_digamma(N - Tx - k * barN + X_hat_k) - safe_digamma(N - Tx + 1)
+      # Old
+     # d_hypergeo_Tx <- hypergeo_term * (
+     #   safe_digamma(Tx - X_hat_k + 1) - safe_digamma(Tx + 1) +
+     #     safe_digamma(N - Tx - k * barN + X_hat_k) - safe_digamma(N - Tx + 1)
+     # )
+
+     # New
+     d_hypergeo_Tx <- hypergeo_term * (
+       safe_digamma(Tx + 1) - safe_digamma(N - Tx + 1) + safe_digamma(N - Tx - k * barN + X_hat_k + 1)  - safe_digamma(Tx - X_hat_k + 1)
       )
 
       # Probability term:
@@ -674,48 +728,65 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
   # delta: False negative rate (item level probability of a true positive being missed)
   # lambda: False positive rate (item level probability of a true negative being falsely identified as positive)
 
-  # Binomial coefficient for selecting `ty` contaminated groups from `b` total groups
-  outer_binomial <- choose_custom(b, ty)
+  pmf <- 0  # Initialize probability to zero
 
-  # Initialize the summation for inclusion-exclusion terms
-  sum_inclusion_exclusion <- 0
+  if (ty > b || ty > Tx && lambda==1) {  # ty must be <= min(b, Tx)
+    return(pmf)
+  }
 
-  # Loop over possible values of `j` to compute inclusion-exclusion terms for each possible contamination level
-  for (j in 0:ty) {
-    # Adjust the population for excluded groups: those not included in the current set of contaminated groups
-    exclusion_population <- N - barN * (b - j)
+    # Binomial coefficient for selecting `ty` contaminated groups from `b` total groups
+    outer_binomial <- choose_custom_log(b, ty)
 
-    # Check if the exclusion population is valid (i.e., there are enough items for the hypergeometric calculation)
-    if (exclusion_population >= Tx) {
+    # Initialize the summation for inclusion-exclusion terms
+    sum_inclusion_exclusion <- 0
 
-      # Compute the item-level q_delta_lambda term (Equation 27) for the current contamination level
-      q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda,verbose)
+    # Loop over possible values of `j` to compute inclusion-exclusion terms for each possible contamination level
+    for (j in 0:ty) {
+      # Adjust the population for excluded groups: those not included in the current set of contaminated groups
+      exclusion_population <- N - barN * (b - j)
+
+      # Check if the exclusion population is valid (i.e., there are enough items for the hypergeometric calculation)
+
+      # Handle special cases
+      if (exclusion_population < 0) {
+        next  # Skip this iteration as the exclusion population is invalid
+      } else if (exclusion_population == Tx && Tx == 0) {
+        q_delta_lambda_item <- 1  # Set to 1 when both are zero
+      } else if (exclusion_population >= Tx) {
+        # Compute dq(Delta, Lambda, k) which considers the sensitivity (Delta) and specificity (Lambda)
+        q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda, verbose)
+      } else {
+        if (verbose) {
+          # Debug message for invalid terms where the exclusion population is not sufficient
+          cat("Skipping invalid term: j =", j,
+              "| exclusion_population =", exclusion_population,
+              "| Tx =", Tx, "\n")
+        }
+        next
+      }
 
       # Compute the term for inclusion-exclusion
       # The term adjusts for how many items are included or excluded from the contamination set
-      term <- (-1)^(ty - j) * choose_custom(ty, j) * q_delta_lambda_item
+      term <- (-1)^(ty - j) * choose_custom_log(ty, j) * q_delta_lambda_item
 
       # Add the term to the summation
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
-    } else {
-      if (verbose) {
-        # If the exclusion population is invalid, skip this term and print debug information
-        cat("Skipping invalid term: j =", j,
-            "| exclusion_population =", exclusion_population,
-            "| Tx =", Tx, "\n")
+
       }
-    }
-  }
 
-  # Multiply the binomial coefficient with the sum of inclusion-exclusion terms to compute the PMF
-  pmf <- outer_binomial * sum_inclusion_exclusion
 
-  # Apply a threshold for very small probabilities, setting them to zero to avoid numerical errors
-  if (abs(pmf) < 1e-12) pmf <- 0
+    # Multiply the binomial coefficient with the sum of inclusion-exclusion terms to compute the PMF
+    pmf <- outer_binomial * sum_inclusion_exclusion
+
+    # Apply a threshold for very small probabilities, setting them to zero to avoid numerical errors
+    if (abs(pmf) < 1e-5) pmf <- 0
+
+
 
   # Return the computed PMF value
   return(pmf)
 }
+
 
 
 
@@ -740,24 +811,49 @@ dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRU
 
   pmf <- pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose )
 
-  if (pmf > 0) {
-    outer_binomial <- choose_custom(b, ty)
-    sum_inclusion_exclusion_derivative <- 0
+  if (ty > b || (ty > Tx && lambda == 1) || (pmf == 0 && lambda == 1)) {
+    return(0)
+  }
 
-    for (j in 0:ty) {
-      exclusion_population <- N - barN * (b - j)
+  #  if (pmf > 0) {
+  outer_binomial <- choose_custom_log(b, ty)
 
-      if (exclusion_population >= Tx) {
-        dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
-        term_derivative <- (-1)^(ty - j) * choose_custom(ty, j) * dq_delta_lambda_item
-        sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative + term_derivative
+  sum_inclusion_exclusion_derivative <- 0
+
+  for (j in 0:ty) {
+    exclusion_population <- N - barN * (b - j)
+
+    # Handle special cases
+    if (exclusion_population < 0) {
+      next  # Skip this iteration as the exclusion population is invalid
+    } else if (exclusion_population == Tx && Tx == 0) {
+      dq_delta_lambda_item <- 1  # Set to 1 when both are zero
+    } else if (exclusion_population >= Tx) {
+      # Compute dq(Delta, Lambda, k) which considers the sensitivity (Delta) and specificity (Lambda)
+      dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
+    } else {
+      if (verbose) {
+        # Debug message for invalid terms where the exclusion population is not sufficient
+        cat("Skipping invalid term: j =", j,
+            "| exclusion_population =", exclusion_population,
+            "| Tx =", Tx, "\n")
       }
+      next
     }
 
-    pmf_derivative <- outer_binomial * sum_inclusion_exclusion_derivative
-  } else {
-    pmf_derivative <- 0
+
+
+#    if (exclusion_population >= Tx) {
+#      dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
+      term_derivative <- (-1)^(ty - j) * choose_custom_log(ty, j) * dq_delta_lambda_item
+      sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative + term_derivative
+ #   }
   }
+
+  pmf_derivative <- outer_binomial * sum_inclusion_exclusion_derivative
+  #  } else {
+  #    pmf_derivative <- 0
+
 
   return(pmf_derivative)
 }
@@ -786,7 +882,7 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
   type <- match.arg(type)
 
   for (ty in 0:b) {
-    if (ty > Tx && delta == 1 && lambda == 1) next
+    if (ty > b || ty > Tx && lambda == 1) next
 
     P_ty <- if (type == "group") {
       pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
@@ -834,6 +930,92 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
   return(FI_Tx)
 }
 
+#' Fisher Information for Imperfect Detection
+#'
+#' This function calculates the Fisher Information for imperfect detection using different
+#' methods (analytic, numerical, or PMF-based approximation) and detection types (group or item level).
+#' This function also provides probability, derivative of ty w.r.t Tx and finally Fisher information for a given Tx
+#' @param N Integer. Total population size (base size for hypergeometric distribution).
+#' @param barN Numeric. Average size of each group.
+#' @param Tx Integer. Number of successes (contaminated cases to be distributed).
+#' @param b Integer. Total number of groups.
+#' @param delta Numeric. False negative rate.
+#' @param lambda Numeric. False positive rate.
+#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), or `"PMF"` (PMF-based approximation).
+#' @param type Character. Detection type. One of `"group"` or `"item"`.
+#' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
+#' @return Numeric. The calculated Fisher Information.
+#' @examples
+#' FIpmfHG.Tx.imperfect(N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05, method = "AD", type = "item")
+#' @export
+FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF"), type = c("group", "item"), verbose = TRUE) {
+  FI_Tx <- 0
+  method <- match.arg(method)
+  type <- match.arg(type)
+  P_ty_vector <- numeric(b + 1)  # Initialize vector with zeros
+  dP_ty_vector <- NULL
+
+  for (ty in 0:b) {
+    if (ty > b || (ty > Tx && lambda == 1)) next  # Skip iterations where ty > b or ty > Tx when lambda == 1
+
+    P_ty <- if (ty > Tx && lambda == 1) {  # Ensure P_ty = 0 when ty > Tx
+      0
+    } else if (type == "group") {
+      pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda, verbose)
+    } else {
+      pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose)
+    }
+
+    P_ty_vector[ty + 1] <- P_ty  # Store probability
+
+    if (P_ty == 0) next  # Skip further calculations if P_ty is 0
+
+    if (method == "AD") {
+      dP_Tx <- if (type == "group") {
+        dpmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda, verbose)
+      } else {
+        dpmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose)
+      }
+
+      dP_ty_vector[ty + 1] <- dP_Tx
+      FI_Tx <- FI_Tx + (dP_Tx^2 / P_ty)
+    }
+
+    if (method == "PMF") {
+      P_ty_Tx_plus1 <- if (type == "group") {
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      } else {
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      }
+
+      if (P_ty_Tx_plus1 > 0 && P_ty > 0) {
+        FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
+      }
+    }
+
+    if (method == "ND") {
+      P_plus <- if (type == "group") {
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      } else {
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      }
+
+      if (P_plus > 0 && P_ty > 0) {
+        FI_Tx <- FI_Tx + ((P_plus - P_ty)^2 / P_ty)
+      }
+    }
+  }
+
+  # Create the data frame ensuring p_ty = 0 for ty > Tx
+  ty.data <- data.frame(ty = 0:b, p_ty = P_ty_vector)
+
+  if (method == "AD") {
+    ty.data$dp_ty <- c(dP_ty_vector, rep(NA, length(ty.data$ty) - length(dP_ty_vector)))
+  }
+
+  list(FI_Tx = FI_Tx, ty.data = ty.data)
+}
+
 
 #' Calculate Expectation and Variance with Group-Level Sensitivity and Specificity
 #'
@@ -859,10 +1041,10 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 ExpVarHG.imperfect.group <- function(N, Tx, barN, b, delta, lambda) {
 # Step 1: Calculate hypergeometric probabilities ----------------#
 # Probability that a single group does not contain any contaminated items
-P_single_group <- choose_custom(N - barN, Tx) / choose_custom(N, Tx)
+P_single_group <- choose_custom_log(N - barN, Tx) / choose_custom_log(N, Tx)
 
 # Probability that two groups do not contain any contaminated items
-P_two_groups <- choose_custom(N - 2 * barN, Tx) / choose_custom(N, Tx)
+P_two_groups <- choose_custom_log(N - 2 * barN, Tx) / choose_custom_log(N, Tx)
 
 # Step 2: Calculate V (probability a single group tests positive) ----------------#
 # Combines true positive detection and false positive errors
@@ -909,8 +1091,8 @@ ExpVarHG.imperfect.item <- function(N, Tx, barN, b, delta, lambda) {
     phi <- 0
     for (X_k in 0:(k * barN)) {
       # Hypergeometric term: exact contaminated item count
-      hypergeo_term <- choose_custom(k * barN, X_k) *
-        (choose_custom(N - k * barN, Tx - X_k) / choose_custom(N, Tx))
+      hypergeo_term <- choose_custom_log(k * barN, X_k) *
+        (choose_custom_log(N - k * barN, Tx - X_k) / choose_custom_log(N, Tx))
 
       # Weighted by sensitivity and specificity
       phi <- phi + hypergeo_term * s^X_k

@@ -1,8 +1,6 @@
 Package: groupedHG
 Version: 0.0.0.9000
 Authors@R: 
-    person("Sumonkanti", "Das", , "sumonkanti.das@anu.edu.au", role = c("aut", "cre"))
-Authors@R: 
     c(
       person("Sumonkanti", "Das", email = "sumonkanti.das@anu.edu.au", role = c("aut", "cre")),
       person("Barnes", "Belinda", email = "Belinda.Barnes@aff.gov.au", role = "aut"),
