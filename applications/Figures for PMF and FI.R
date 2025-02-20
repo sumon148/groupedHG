@@ -240,9 +240,9 @@ FI_case1_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(T
 FI_case2_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "group",verbose = FALSE))
 FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "group",verbose = FALSE))
 
-# Using detail estimation by ty values
+# Using detail estimation by ty values : Item level ------------------ #
 
-Tx_values <- c(0:80)
+Tx_values <- c(0:100)
 # Apply function over all Tx values
 FI_results_case1_AD_Based_Item <- lapply(Tx_values, function(Tx) {
   result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 1.0, lambda = 1.0, method = "AD", type = "item")
@@ -252,6 +252,7 @@ FI_results_case1_AD_Based_Item <- lapply(Tx_values, function(Tx) {
 })
 
 # Combine into a single dataframe
+
 FI_case1_AD_Based_Item_detail <- bind_rows(FI_results_case1_AD_Based_Item)
 
 FI_case1_AD_Based_Item_detail <- data.frame(cbind(Tx=FI_case1_AD_Based_Item_detail$Tx,ty=FI_case1_AD_Based_Item_detail$ty,p_ty=FI_case1_AD_Based_Item_detail$p_ty,dp_ty=FI_case1_AD_Based_Item_detail$dp_ty,FI_Tx=FI_case1_AD_Based_Item_detail$FI_Tx))
@@ -259,6 +260,45 @@ View(FI_case1_AD_Based_Item_detail)
 
 tapply(FI_case1_AD_Based_Item_detail$p_ty,FI_case1_AD_Based_Item_detail$Tx,sum)
 
+names(FI_case1_AD_Based_Item_detail)
+
+FI_case1_AD_Based_Item_detail$ParamSensitivity <- 1
+FI_case1_AD_Based_Item_detail$ParamSpecificity <- 1
+FI_case1_AD_Based_Item_detail$Model <- "Item-level"
+
+FI_case1_AD_Based_Item_detail <- FI_case1_AD_Based_Item_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+FI_results_case1_AD_Based_item_detail <- FI_case1_AD_Based_Item_detail
+
+
+# For Case 2
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case2_AD_Based_item <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "item")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+# Combine into a single dataframe
+FI_results_case2_AD_Based_item_detail <- bind_rows(FI_results_case2_AD_Based_item)
+
+FI_results_case2_AD_Based_item_detail <- data.frame(cbind(Tx=FI_results_case2_AD_Based_item_detail$Tx,ty=FI_results_case2_AD_Based_item_detail$ty,p_ty=FI_results_case2_AD_Based_item_detail$p_ty,dp_ty=FI_results_case2_AD_Based_item_detail$dp_ty,FI_Tx=FI_results_case2_AD_Based_item_detail$FI_Tx))
+View(FI_results_case2_AD_Based_item_detail)
+
+tapply(FI_results_case2_AD_Based_item_detail$p_ty,FI_results_case2_AD_Based_item_detail$Tx,sum)
+
+FI_results_case2_AD_Based_item_detail$ParamSensitivity <- 0.7
+FI_results_case2_AD_Based_item_detail$ParamSpecificity <- 1
+FI_results_case2_AD_Based_item_detail$Model <- "Item-level"
+
+FI_results_case2_AD_Based_item_detail <- FI_results_case2_AD_Based_item_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+
+
+# For Case 3
 
 Tx_values <- c(0:100)
 # Apply function over all Tx values
@@ -270,12 +310,220 @@ FI_results_case3_AD_Based_item <- lapply(Tx_values, function(Tx) {
 })
 
 # Combine into a single dataframe
-FI_results_case3_AD_Based_item <- bind_rows(FI_results_case3_AD_Based_item)
+FI_results_case3_AD_Based_item_detail <- bind_rows(FI_results_case3_AD_Based_item)
 
-FI_results_case3_AD_Based_item <- data.frame(cbind(Tx=FI_results_case3_AD_Based_item$Tx,ty=FI_results_case3_AD_Based_item$ty,p_ty=FI_results_case3_AD_Based_item$p_ty,dp_ty=FI_results_case3_AD_Based_item$dp_ty,FI_Tx=FI_results_case3_AD_Based_item$FI_Tx))
-View(FI_results_case3_AD_Based_item)
+FI_results_case3_AD_Based_item_detail <- data.frame(cbind(Tx=FI_results_case3_AD_Based_item_detail$Tx,ty=FI_results_case3_AD_Based_item_detail$ty,p_ty=FI_results_case3_AD_Based_item_detail$p_ty,dp_ty=FI_results_case3_AD_Based_item_detail$dp_ty,FI_Tx=FI_results_case3_AD_Based_item_detail$FI_Tx))
+View(FI_results_case3_AD_Based_item_detail)
 
-tapply(FI_results_case3_AD_Based_item$p_ty,FI_results_case3_AD_Based_item$Tx,sum)
+tapply(FI_results_case3_AD_Based_item_detail$p_ty,FI_results_case3_AD_Based_item_detail$Tx,sum)
+
+FI_results_case3_AD_Based_item_detail$ParamSensitivity <- 0.7
+FI_results_case3_AD_Based_item_detail$ParamSpecificity <- 0.8
+FI_results_case3_AD_Based_item_detail$Model <- "Item-level"
+
+FI_results_case3_AD_Based_item_detail <- FI_results_case3_AD_Based_item_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+
+
+# Using detail estimation by ty values : Group level ------------------ #
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case1_AD_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 1.0, lambda = 1.0, method = "AD", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+# Combine into a single dataframe
+
+FI_case1_AD_Based_Group_detail <- bind_rows(FI_results_case1_AD_Based_Group)
+
+FI_case1_AD_Based_Group_detail <- data.frame(cbind(Tx=FI_case1_AD_Based_Group_detail$Tx,ty=FI_case1_AD_Based_Group_detail$ty,p_ty=FI_case1_AD_Based_Group_detail$p_ty,dp_ty=FI_case1_AD_Based_Group_detail$dp_ty,FI_Tx=FI_case1_AD_Based_Group_detail$FI_Tx))
+View(FI_case1_AD_Based_Group_detail)
+
+tapply(FI_case1_AD_Based_Group_detail$p_ty,FI_case1_AD_Based_Group_detail$Tx,sum)
+
+names(FI_case1_AD_Based_Group_detail)
+
+FI_case1_AD_Based_Group_detail$ParamSensitivity <- 1
+FI_case1_AD_Based_Group_detail$ParamSpecificity <- 1
+FI_case1_AD_Based_Group_detail$Model <- "Group-level"
+
+FI_case1_AD_Based_Group_detail <- FI_case1_AD_Based_Group_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+FI_results_case1_AD_Based_Group_detail <- FI_case1_AD_Based_Group_detail
+
+# For Case 2
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case2_AD_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+# Combine into a single dataframe
+FI_results_case2_AD_Based_Group_detail <- bind_rows(FI_results_case2_AD_Based_Group)
+
+FI_results_case2_AD_Based_Group_detail <- data.frame(cbind(Tx=FI_results_case2_AD_Based_Group_detail$Tx,ty=FI_results_case2_AD_Based_Group_detail$ty,p_ty=FI_results_case2_AD_Based_Group_detail$p_ty,dp_ty=FI_results_case2_AD_Based_Group_detail$dp_ty,FI_Tx=FI_results_case2_AD_Based_Group_detail$FI_Tx))
+View(FI_results_case2_AD_Based_Group_detail)
+
+tapply(FI_results_case2_AD_Based_Group_detail$p_ty,FI_results_case2_AD_Based_Group_detail$Tx,sum)
+
+FI_results_case2_AD_Based_Group_detail$ParamSensitivity <- 0.7
+FI_results_case2_AD_Based_Group_detail$ParamSpecificity <- 1
+FI_results_case2_AD_Based_Group_detail$Model <- "Group-level"
+
+FI_results_case2_AD_Based_Group_detail <- FI_results_case2_AD_Based_Group_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+
+
+# For Case 3
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case3_AD_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+# Combine into a single dataframe
+FI_results_case3_AD_Based_Group_detail <- bind_rows(FI_results_case3_AD_Based_Group)
+
+FI_results_case3_AD_Based_Group_detail <- data.frame(cbind(Tx=FI_results_case3_AD_Based_Group_detail$Tx,ty=FI_results_case3_AD_Based_Group_detail$ty,p_ty=FI_results_case3_AD_Based_Group_detail$p_ty,dp_ty=FI_results_case3_AD_Based_Group_detail$dp_ty,FI_Tx=FI_results_case3_AD_Based_Group_detail$FI_Tx))
+View(FI_results_case3_AD_Based_Group_detail)
+
+tapply(FI_results_case3_AD_Based_Group_detail$p_ty,FI_results_case3_AD_Based_Group_detail$Tx,sum)
+
+FI_results_case3_AD_Based_Group_detail$ParamSensitivity <- 0.7
+FI_results_case3_AD_Based_Group_detail$ParamSpecificity <- 0.8
+FI_results_case3_AD_Based_Group_detail$Model <- "Group-level"
+
+FI_results_case3_AD_Based_Group_detail <- FI_results_case3_AD_Based_Group_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
+
+
+# Compare with MATLAB PMF -----------------------
+
+PMF_MATLAB <- read.csv("C:/Users/u1107832/OneDrive - Australian National University/LP RSFAS SD/HG Belinda Paper/BB Code/PMF_long_format.csv",header=T)
+
+names(PMF_MATLAB)
+
+table(PMF_MATLAB$Model,PMF_MATLAB$ParamSensitivity)
+
+png("Figure/PMF Comparison Group Level Perfect case.png",width = 8,height = 8,units = "in",res=300)
+
+PMF_MATLAB_Case1_Group <- PMF_MATLAB[PMF_MATLAB$Model=="Group-level Perfect (1,1)",]
+
+
+
+ty_values <- c(0:4)
+
+par(mfrow=c(3,2))
+for (i in ty_values) {
+  plot(FI_results_case1_AD_Based_Group_detail$Tx[FI_results_case1_AD_Based_Group_detail$ty==i],FI_results_case1_AD_Based_Group_detail$p_ty[FI_results_case1_AD_Based_Group_detail$ty==i],main=paste("PMF for ty=", i, " | Tx: Perfect Case"),xlab="Tx",ylab = "PMF", bty = "n")
+  lines(PMF_MATLAB_Case1_Group$TX[PMF_MATLAB_Case1_Group$t_y==i],PMF_MATLAB_Case1_Group$ProbMassFunc[PMF_MATLAB_Case1_Group$t_y==i],typ="l",col=2,lty=2)
+  legend("topright",legend=c("R","MATLAB"),col=c(1,2),pch=c(21,NA),lty=c(NA,2), bty = "n")
+
+}
+
+dev.off()
+
+
+png("Figure/PMF Comparison Group Level Imperfect Sensitivity.png",width = 8,height = 8,units = "in",res=300)
+
+PMF_MATLAB_Case2_Group <- PMF_MATLAB[PMF_MATLAB$Model=="Group-level (0.7,1)",]
+
+
+
+ty_values <- c(0:4)
+
+par(mfrow=c(3,2))
+for (i in ty_values) {
+  plot(FI_results_case2_AD_Based_Group_detail$Tx[FI_results_case2_AD_Based_Group_detail$ty==i],FI_results_case2_AD_Based_Group_detail$p_ty[FI_results_case2_AD_Based_Group_detail$ty==i],main=paste("PMF for ty=", i, " | Tx: Group-level Imperfect Sensitivity"),xlab="Tx",ylab = "PMF", bty = "n",cex.main=0.75)
+  lines(PMF_MATLAB_Case2_Group$TX[PMF_MATLAB_Case2_Group$t_y==i],PMF_MATLAB_Case2_Group$ProbMassFunc[PMF_MATLAB_Case2_Group$t_y==i],typ="l",col=2,lty=2)
+  legend("topright",legend=c("R","MATLAB"),col=c(1,2),pch=c(21,NA),lty=c(NA,2), bty = "n")
+
+}
+
+dev.off()
+
+
+png("Figure/PMF Comparison Group Level Imperfect case.png",width = 8,height = 8,units = "in",res=300)
+
+PMF_MATLAB_Case3_Group <- PMF_MATLAB[PMF_MATLAB$Model=="Group-level (0.7,0.8)",]
+
+
+
+ty_values <- c(0:4)
+
+par(mfrow=c(3,2))
+for (i in ty_values) {
+  plot(FI_results_case3_AD_Based_Group_detail$Tx[FI_results_case3_AD_Based_Group_detail$ty==i],FI_results_case3_AD_Based_Group_detail$p_ty[FI_results_case3_AD_Based_Group_detail$ty==i],main=paste("PMF for ty=", i, " | Tx: Group-level Imperfect Case"),xlab="Tx",ylab = "PMF", bty = "n",cex.main=0.75)
+  lines(PMF_MATLAB_Case3_Group$TX[PMF_MATLAB_Case3_Group$t_y==i],PMF_MATLAB_Case3_Group$ProbMassFunc[PMF_MATLAB_Case3_Group$t_y==i],typ="l",col=2,lty=2)
+  legend("topright",legend=c("R","MATLAB"),col=c(1,2),pch=c(21,NA),lty=c(NA,2), bty = "n")
+
+}
+
+dev.off()
+
+
+
+png("Figure/PMF Comparison Item Level Imperfect Sensitivity.png",width = 8,height = 8,units = "in",res=300)
+
+PMF_MATLAB_Case2_Item <- PMF_MATLAB[PMF_MATLAB$Model=="Item-level (0.7,1)",]
+
+
+
+ty_values <- c(0:4)
+
+par(mfrow=c(3,2))
+for (i in ty_values) {
+  plot(FI_results_case2_AD_Based_item_detail$Tx[FI_results_case2_AD_Based_item_detail$ty==i],FI_results_case2_AD_Based_item_detail$p_ty[FI_results_case2_AD_Based_item_detail$ty==i],main=paste("PMF for ty=", i, " | Tx: Group-level Imperfect Sensitivity"),xlab="Tx",ylab = "PMF", bty = "n",cex.main=0.75)
+  lines(PMF_MATLAB_Case2_Item$TX[PMF_MATLAB_Case2_Item$t_y==i],PMF_MATLAB_Case2_Item$ProbMassFunc[PMF_MATLAB_Case2_Item$t_y==i],typ="l",col=2,lty=2)
+  legend("topright",legend=c("R","MATLAB"),col=c(1,2),pch=c(21,NA),lty=c(NA,2), bty = "n")
+
+}
+
+dev.off()
+
+
+png("Figure/PMF Comparison Item Level Imperfect case.png",width = 8,height = 8,units = "in",res=300)
+
+PMF_MATLAB_Case3_Item <- PMF_MATLAB[PMF_MATLAB$Model=="Item-level (0.7,0.8)",]
+
+
+
+ty_values <- c(0:4)
+
+par(mfrow=c(3,2))
+for (i in ty_values) {
+  plot(FI_results_case3_AD_Based_item_detail$Tx[FI_results_case3_AD_Based_item_detail$ty==i],FI_results_case3_AD_Based_item_detail$p_ty[FI_results_case3_AD_Based_item_detail$ty==i],main=paste("PMF for ty=", i, " | Tx: Group-level Imperfect Case"),xlab="Tx",ylab = "PMF", bty = "n",cex.main=0.75)
+  lines(PMF_MATLAB_Case3_Item$TX[PMF_MATLAB_Case3_Item$t_y==i],PMF_MATLAB_Case3_Item$ProbMassFunc[PMF_MATLAB_Case3_Item$t_y==i],typ="l",col=2,lty=2)
+  legend("topright",legend=c("R","MATLAB"),col=c(1,2),pch=c(21,NA),lty=c(NA,2), bty = "n")
+
+}
+
+dev.off()
+
+
+# Create the dataset ------#
+
+Detail_Results_Item_Group <- rbind(FI_results_case1_AD_Based_Group_detail,
+      FI_results_case2_AD_Based_Group_detail,
+      FI_results_case3_AD_Based_Group_detail,
+      FI_results_case1_AD_Based_item_detail,
+      FI_results_case2_AD_Based_item_detail,
+      FI_results_case3_AD_Based_item_detail)
+
+write.csv(Detail_Results_Item_Group,file="Figure/Detail_Results_Item_Group.csv")
+
+# PMF Based -----------#
 
 
 

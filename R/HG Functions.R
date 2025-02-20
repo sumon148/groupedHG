@@ -299,15 +299,14 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
       exclusion_population <- N - barN * (k - (ell - i))
 
 
-    # Check if the exclusion population is valid for hypergeometric probability
-      if (exclusion_population >= Tx) {
-        # Compute the term for this combination of ell and i
-        term <- (-1)^i * choose_custom_log(ell, i) *
-          (choose_custom_log(exclusion_population, Tx) / total_choose)
+      inner_sum <- inner_sum + ifelse(
+        exclusion_population == Tx && Tx == 0, 1,
+        ifelse(exclusion_population >= Tx,
+               (-1)^i * choose_custom_log(ell, i) * (choose_custom_log(exclusion_population, Tx) / total_choose),
+               0
+        )
+      )
 
-        # Add the term to the inner summation
-        inner_sum <- inner_sum + term
-      }
     }
 
     # Add the contribution from the current ell to q_Delta_Lambda_k
@@ -448,7 +447,7 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
     exclusion_population <- N - barN * (b - j)  # Adjust population size based on the excluded groups
 
     # Check if the exclusion population is valid (should be >= Tx to proceed)
-    if (exclusion_population >= Tx) {
+ #   if (exclusion_population >= Tx) {
       # Compute q(Delta, Lambda, k) which considers the sensitivity (Delta) and specificity (Lambda)
       q_Delta_Lambda <- qDLkGroup(b - j, N, Tx, barN, delta, lambda)
 
@@ -457,15 +456,17 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
 
       # Add the term to the summation for inclusion-exclusion
       sum_inclusion_exclusion <- sum_inclusion_exclusion + term
-    } else {
+ #   } else {
 
-      if (verbose) {
-      # Debug message for invalid terms where the exclusion population is not sufficient
-      cat("Skipping invalid term: j =", j,
-          "| exclusion_population =", exclusion_population,
-          "| Tx =", Tx, "\n")
-    }
-  }
+      # if (verbose) {
+      # # Debug message for invalid terms where the exclusion population is not sufficient
+      # cat("Skipping invalid term: j =", j,
+      #     "| exclusion_population =", exclusion_population,
+      #     "| Tx =", Tx, "\n")
+      # }
+#  }
+
+
 }
 
   # Multiply the result of the inclusion-exclusion summation by the outer binomial coefficient to get the final PMF
@@ -734,52 +735,32 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
     return(pmf)
   }
 
-    # Binomial coefficient for selecting `ty` contaminated groups from `b` total groups
-    outer_binomial <- choose_custom_log(b, ty)
+  # Binomial coefficient for selecting `ty` contaminated groups from `b` total groups
+  outer_binomial <- choose_custom_log(b, ty)
 
-    # Initialize the summation for inclusion-exclusion terms
-    sum_inclusion_exclusion <- 0
+  # Initialize the summation for inclusion-exclusion terms
+  sum_inclusion_exclusion <- 0
 
-    # Loop over possible values of `j` to compute inclusion-exclusion terms for each possible contamination level
-    for (j in 0:ty) {
-      # Adjust the population for excluded groups: those not included in the current set of contaminated groups
-      exclusion_population <- N - barN * (b - j)
+  # Loop over possible values of `j` to compute inclusion-exclusion terms for each possible contamination level
+  for (j in 0:ty) {
+    # Adjust the population for excluded groups: those not included in the current set of contaminated groups
+    exclusion_population <- N - barN * (b - j)
+    q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda, verbose)
+    # Compute the term for inclusion-exclusion
+    # The term adjusts for how many items are included or excluded from the contamination set
+    term <- (-1)^(ty - j) * choose_custom_log(ty, j) * q_delta_lambda_item
 
-      # Check if the exclusion population is valid (i.e., there are enough items for the hypergeometric calculation)
+    # Add the term to the summation
+    sum_inclusion_exclusion <- sum_inclusion_exclusion + term
 
-      # Handle special cases
-      if (exclusion_population < 0) {
-        next  # Skip this iteration as the exclusion population is invalid
-      } else if (exclusion_population == Tx && Tx == 0) {
-        q_delta_lambda_item <- 1  # Set to 1 when both are zero
-      } else if (exclusion_population >= Tx) {
-        # Compute dq(Delta, Lambda, k) which considers the sensitivity (Delta) and specificity (Lambda)
-        q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda, verbose)
-      } else {
-        if (verbose) {
-          # Debug message for invalid terms where the exclusion population is not sufficient
-          cat("Skipping invalid term: j =", j,
-              "| exclusion_population =", exclusion_population,
-              "| Tx =", Tx, "\n")
-        }
-        next
-      }
-
-      # Compute the term for inclusion-exclusion
-      # The term adjusts for how many items are included or excluded from the contamination set
-      term <- (-1)^(ty - j) * choose_custom_log(ty, j) * q_delta_lambda_item
-
-      # Add the term to the summation
-      sum_inclusion_exclusion <- sum_inclusion_exclusion + term
-
-      }
+  }
 
 
-    # Multiply the binomial coefficient with the sum of inclusion-exclusion terms to compute the PMF
-    pmf <- outer_binomial * sum_inclusion_exclusion
+  # Multiply the binomial coefficient with the sum of inclusion-exclusion terms to compute the PMF
+  pmf <- outer_binomial * sum_inclusion_exclusion
 
-    # Apply a threshold for very small probabilities, setting them to zero to avoid numerical errors
-    if (abs(pmf) < 1e-5) pmf <- 0
+  # Apply a threshold for very small probabilities, setting them to zero to avoid numerical errors
+  if (abs(pmf) < 1e-5) pmf <- 0
 
 
 
