@@ -11,7 +11,7 @@ FIpmfHG.Tx.imperfect(
   b,
   delta,
   lambda,
-  method = c("AD", "ND", "PMF"),
+  method = c("AD", "ND", "PMF-HI", "PMF-SM"),
   type = c("group", "item"),
   verbose = TRUE
 )
@@ -29,7 +29,7 @@ FIpmfHG.Tx.imperfect(
 
 \item{lambda}{Numeric. False positive rate.}
 
-\item{method}{Character. Method for computing Fisher Information. One of \code{"AD"} (analytic derivative), \code{"ND"} (numerical derivative), or \code{"PMF"} (PMF-based approximation).}
+\item{method}{Character. Method for computing Fisher Information. One of \code{"AD"} (analytic derivative), \code{"ND"} (numerical derivative), \code{"PMF-SM"} (PMF-based approximation using Sanchez-Moreno et al (2009) paper where ty=0 to (b-1)), or \code{"PMF-HI"} (where ty=0 to b used as in Shemyakin (2023)).}
 
 \item{type}{Character. Detection type. One of \code{"group"} or \code{"item"}.}
 
@@ -43,5 +43,5 @@ This function calculates the Fisher Information for imperfect detection using di
 methods (analytic, numerical, or PMF-based approximation) and detection types (group or item level).
 }
 \examples{
-FIpmfHG.Tx.imperfect(N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05, method = "AD", type = "item")
+FIpmfHG.Tx.imperfect(N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
 }

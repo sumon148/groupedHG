@@ -4,7 +4,7 @@
 \alias{FIpmfHG.Tx.perfect}
 \title{Fisher Information for \eqn{T_x} (Perfect Case)}
 \usage{
-FIpmfHG.Tx.perfect(N, barN, Tx, b, method = c("AD", "ND", "PMF"))
+FIpmfHG.Tx.perfect(N, barN, Tx, b, method = c("AD", "ND", "PMF-HI", "PMF-SM"))
 }
 \arguments{
 \item{N}{Integer. Total population size.}

@@ -31,5 +31,5 @@ Calculates the probability mass function (PMF) with item-level sensitivity and
 specificity, based on the number of identified contaminated groups.
 }
 \examples{
-pmfHG.imperfect.item(ty = 2, N = 100, barN = 10, Tx = 5, b = 5, delta = 0.1, lambda = 0.05)
+pmfHG.imperfect.item(ty = 2, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 }

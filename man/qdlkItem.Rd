@@ -30,5 +30,5 @@ in the groups are identified as contaminated, considering item-level false
 negative and false positive rates.
 }
 \examples{
-qdlkqdlkItem(k = 3, N = 100, Tx = 5, barN = 10, delta = 0.1, lambda = 0.05)
+qdlkqdlkItem(k = 3, N = 100, Tx = 20, barN = 4, delta = 0.7, lambda = 0.8)
 }

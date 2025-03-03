@@ -74,6 +74,13 @@ pmfBN.imperfect.group <- function(ty, Tx, b, barN, N, delta, lambda) {
   # Delta: Group level False negative rate (probability that a positive case is classified as negative)
   # Lambda: Group level False positive rate (probability that a negative case is classified as positive)
 
+
+  pmf <- 0 # % Initialize the probability to zero
+
+  if (Tx > N) return(pmf)
+
+
+
   # Probabilities of detection and non-detection
   prob_non_detect <- lambda * choose_custom(N-barN,Tx) / choose_custom(N,Tx) + (1 - delta) * (1 - choose_custom(N-barN,Tx) / choose_custom(N,Tx))
   prob_detect <- 1 - prob_non_detect
@@ -85,7 +92,15 @@ pmfBN.imperfect.group <- function(ty, Tx, b, barN, N, delta, lambda) {
   # Apply threshold for small probabilities
   if (abs(pmf) < 1e-12) pmf <- 0
 
+
+  # Check for invalid values
+  if (is.na(pmf) || is.nan(pmf) || is.infinite(pmf)) {
+    return(0)  # Prevent NaN issues
+  }
+
   return(pmf)
+
+
 }
 
 #' Probability Mass Function for Grouped Binomial Distribution under item-level imperfect Test
@@ -102,7 +117,7 @@ pmfBN.imperfect.group <- function(ty, Tx, b, barN, N, delta, lambda) {
 #' @param lambda Numeric. The group-level false positive rate, which is the probability that a negative case is classified as positive.
 #' @return Numeric. The probability mass function (PMF) for the given group-level parameters.
 #' @examples
-#' pmfBN.imperfect.group(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
+#' pmfBN.imperfect.item(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
 #' @export
 pmfBN.imperfect.item <- function(ty, Tx, b, barN, N, delta, lambda) {
   # Function to calculate item-level PMF using Equation (22)
@@ -230,7 +245,7 @@ FIpmfBN.Tx.imperfect.group <- function(Tx, b, barN, N, delta, lambda) {
   # delta: Group level False negative rate (probability that a positive case is classified as negative)
   # lambda: Group level False positive rate (probability that a negative case is classified as positive)
 
-  if (Tx == 0 & delta == 1 & lambda == 1) {
+  if (Tx == 0 || Tx == 100 & delta == 1 & lambda == 1) {
     # Handle Tx = 0 explicitly
     FI <- 0  # Fisher information is zero if Tx = 0 since no variability exists
     cat("Tx = 0: Fisher information set to 0 as no variability exists.\n")
@@ -331,7 +346,7 @@ FIpmfBN.Tx.imperfect.item <- function(Tx, b, barN, N,delta,lambda) {
 #' @param b Numeric. The total number of groups.
 #' @param delta Numeric. The group or item-level false negative rate (probability that a positive case is classified as negative).
 #' @param lambda Numeric. The group or item-level false positive rate (probability that a negative case is classified as positive).
-#' @param method Character. The method for Fisher information calculation. One of "AD" (Analytical Derivative), "ND" (Numerical Derivative), or "PMF" (PMF-based approximation). Default is "AD".
+#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), `"PMF-SM"` (PMF-based approximation using Sanchez-Moreno et al (2009) paper where ty=0 to (b-1)), or `"PMF-HI"` (where ty=0 to b used as in Shemyakin (2023)).
 #' @param type Character. The type of model for which the Fisher information is calculated. One of "group" (group-level model) or "item" (item-level model). Default is "group".
 #'
 #' @return Numeric. The Fisher information for the grouped binomial distribution in the imperfect case.
@@ -360,7 +375,7 @@ FIpmfBN.Tx.imperfect.item <- function(Tx, b, barN, N,delta,lambda) {
 #'
 #' @export
 FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
-                                 method = c("AD", "ND", "PMF"),
+                                 method = c("AD", "ND", "PMF-SM", "PMF-HI"),
                                  type = c("group", "item")) {
 
   # Ensure valid method and type
@@ -370,7 +385,7 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
   # Initialize Fisher Information
   FI_Tx <- 0
 
-  if(method == "ND" | method == "PMF") {
+  if(method == "ND" | method == "PMF-SM" | method == "PMF-HI") {
     for (ty in 0:b) {
       # Skip invalid cases where ty > Tx and perfect detection
       if (ty > Tx && delta == 1 && lambda == 1) {
@@ -389,8 +404,8 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
         next
       }
 
-      # Method: PMF-based approximation (PMF)
-      if (method == "PMF") {
+      # Method: PMF-based approximation (PMF) - Using ty=0:b
+      if (method == "PMF-HI") {
         # PMF values for Tx and Tx + 1
         if (type == "group") {
           P_ty_Tx_plus1 <- pmfBN.imperfect.group(ty, Tx+1, b, barN, N, delta, lambda)
@@ -402,6 +417,24 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
 
         if (P_ty_Tx_plus1 > 0 && P_ty_Tx > 0) {  # Avoid division by zero
           FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty_Tx))^2
+        }
+      }
+
+      # Method: PMF-based approximation (PMF) - Using ty=0:(b-1)
+      if (method == "PMF-SM") {
+        # PMF values for Tx and Tx + 1
+        if (type == "group") {
+          P_ty_Tx_plus1 <- pmfBN.imperfect.group(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmfBN.imperfect.group(ty, Tx, b, barN, N, delta, lambda)
+        } else {
+          P_ty_Tx_plus1 <- pmfBN.imperfect.item(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmfBN.imperfect.item(ty, Tx, b, barN, N, delta, lambda)
+        }
+
+        if (P_ty_Tx_plus1 > 0 && P_ty_Tx > 0 && ty < b) {  # Avoid division by zero
+          FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty_Tx))^2
+        } else {
+          FI_Tx <- FI_Tx + 0
         }
       }
 

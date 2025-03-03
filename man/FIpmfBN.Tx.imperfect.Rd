@@ -11,7 +11,7 @@ FIpmfBN.Tx.imperfect(
   b,
   delta,
   lambda,
-  method = c("AD", "ND", "PMF"),
+  method = c("AD", "ND", "PMF-SM", "PMF-HI"),
   type = c("group", "item")
 )
 }
@@ -28,7 +28,7 @@ FIpmfBN.Tx.imperfect(
 
 \item{lambda}{Numeric. The group or item-level false positive rate (probability that a negative case is classified as positive).}
 
-\item{method}{Character. The method for Fisher information calculation. One of "AD" (Analytical Derivative), "ND" (Numerical Derivative), or "PMF" (PMF-based approximation). Default is "AD".}
+\item{method}{Character. Method for computing Fisher Information. One of \code{"AD"} (analytic derivative), \code{"ND"} (numerical derivative), \code{"PMF-SM"} (PMF-based approximation using Sanchez-Moreno et al (2009) paper where ty=0 to (b-1)), or \code{"PMF-HI"} (where ty=0 to b used as in Shemyakin (2023)).}
 
 \item{type}{Character. The type of model for which the Fisher information is calculated. One of "group" (group-level model) or "item" (item-level model). Default is "group".}
 }

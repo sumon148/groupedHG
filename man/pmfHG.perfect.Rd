@@ -24,5 +24,5 @@ The probability mass function (PMF) value for the given parameters.
 Function to calculate the PMF for a grouped hypergeometric distribution under a perfect test.
 }
 \examples{
-pmfHG.perfect(ty = 2, N = 100, barN = 10, Tx = 20, b = 5)
+pmfHG.perfect(ty = 2, N = 100, barN = 4, Tx = 20, b = 4)
 }

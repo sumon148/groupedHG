@@ -27,5 +27,5 @@ Calculates the derivative of \eqn{q_{\delta\lambda k} } with respect to the
 number of successes \eqn{T_x} for item-level sensitivity and specificity.
 }
 \examples{
-dqdlk(k = 3, N = 100, Tx = 5, barN = 10, delta = 0.1, lambda = 0.05)
+dqdlk(k = 3, N = 100, Tx = 20, barN = 4, delta = 0.7, lambda = 0.8)
 }

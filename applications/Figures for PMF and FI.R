@@ -224,23 +224,117 @@ legend("topleft",
 
 dev.off()
 
+# Simulation from HG distribution adjusting imperfect test -------------
 
 
-# FI Figures : HG Distribution using Analytic Derivative (AD) Form ------------------
-# As per the paper : HG Distribution  ---------#
+N <- 100  # Total population size
+Tx <- 20  # Number of contaminated items
+barN <- 4  # Group size
+b <- 4     # Number of groups
 
-Tx_values <- c(0:80)
-# Different cases: Item level sensitivity
-FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item"))
-FI_case1_AD_Based_Perfect <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.perfect(Tx, N=100, b=4, barN=4, method = "AD"))
-FI_case2_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "item",verbose = FALSE))
-FI_case4_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "item",verbose = FALSE))
-# Different cases: Group level sensitivity
-FI_case1_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "group",verbose = FALSE))
-FI_case2_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "group",verbose = FALSE))
-FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "group",verbose = FALSE))
+Sim_HG_Perfect_item <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 1,lambda = 1,NoSim = 1000,type = "item")
+Sim_HG_Perfect_item$tydatdeltalambda
 
-# Using detail estimation by ty values : Item level ------------------ #
+exValPerfect_item <- mean(Sim_HG_Perfect_item$tydatdeltalambda[, b + 2])
+varValPerfect_item <- var(Sim_HG_Perfect_item$tydatdeltalambda[, b + 2])
+PRtyPerfect_item <- colMeans(Sim_HG_Perfect_item$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyPerfect_item)
+
+Sim_HG_Imperf_Sen_item <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 1,NoSim = 1000,type = "item")
+Sim_HG_Imperf_Sen_item$tydatdeltalambda
+
+exValImperf_sen_item <- mean(Sim_HG_Imperf_Sen_item$tydatdeltalambda[, b + 2])
+varValImperf_sen_item <- var(Sim_HG_Imperf_Sen_item$tydatdeltalambda[, b + 2])
+PRtyImperf_sen_item <- colMeans(Sim_HG_Imperf_Sen_item$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyImperf_sen_item)
+
+Sim_HG_Imperfect_item <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 0.80,NoSim = 1000,type = "item")
+Sim_HG_Imperfect_item$tydatdeltalambda
+
+exValImperfect_item <- mean(Sim_HG_Imperfect_item$tydatdeltalambda[, b + 2])
+varValImperfect_item <- var(Sim_HG_Imperfect_item$tydatdeltalambda[, b + 2])
+PRtyImperfect_item <- colMeans(Sim_HG_Imperfect_item$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyImperfect_item)
+
+# Group Sensitivity
+Sim_HG_Perfect_group <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 1,lambda = 1,NoSim = 1000,type = "group")
+Sim_HG_Perfect_group$tydatDeltaLambda
+
+exValPerfect_group <- mean(Sim_HG_Perfect_group$tydatDeltaLambda[, b + 2])
+varValPerfect_group <- var(Sim_HG_Perfect_group$tydatDeltaLambda[, b + 2])
+PRtyPerfect_group <- colMeans(Sim_HG_Perfect_group$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyPerfect_group)
+
+Sim_HG_Imperf_Sen_group <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 1,NoSim = 1000,type = "group")
+Sim_HG_Imperf_Sen_group$tydatDeltaLambda
+
+exValImperf_sen_group <- mean(Sim_HG_Imperf_Sen_group$tydatDeltaLambda[, b + 2])
+varValImperf_sen_group <- var(Sim_HG_Imperf_Sen_group$tydatDeltaLambda[, b + 2])
+PRtyImperf_sen_group <- colMeans(Sim_HG_Imperf_Sen_group$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyImperf_sen_group)
+
+Sim_HG_Imperfect_group <- simGroupedHG(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 0.80,NoSim = 1000,type = "group")
+Sim_HG_Imperfect_group$tydatDeltaLambda
+
+exValImperfect_group <- mean(Sim_HG_Imperfect_group$tydatDeltaLambda[, b + 2])
+varValImperfect_group <- var(Sim_HG_Imperfect_group$tydatDeltaLambda[, b + 2])
+PRtyImperfect_group <- colMeans(Sim_HG_Imperfect_group$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyImperfect_group)
+
+# Simulation from BN distribution adjusting imperfect test -------------
+
+Sim_HG_Perfect_item_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 1,lambda = 1,NoSim = 1000,type = "item")
+Sim_HG_Perfect_item_BN$tydatdeltalambda
+
+exValPerfect_item_BN <- mean(Sim_HG_Perfect_item_BN$tydatdeltalambda[, b + 2])
+varValPerfect_item_BN <- var(Sim_HG_Perfect_item_BN$tydatdeltalambda[, b + 2])
+PRtyPerfect_item_BN <- colMeans(Sim_HG_Perfect_item_BN$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyPerfect_item_BN)
+
+Sim_HG_Imperf_Sen_item_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 1,NoSim = 1000,type = "item")
+Sim_HG_Imperf_Sen_item_BN$tydatdeltalambda
+
+exValImperf_sen_item_BN <- mean(Sim_HG_Imperf_Sen_item_BN$tydatdeltalambda[, b + 2])
+varValImperf_sen_item_BN <- var(Sim_HG_Imperf_Sen_item_BN$tydatdeltalambda[, b + 2])
+PRtyImperf_sen_item_BN <- colMeans(Sim_HG_Imperf_Sen_item_BN$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyImperf_sen_item_BN)
+
+Sim_HG_Imperfect_item_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 0.80,NoSim = 1000,type = "item")
+Sim_HG_Imperfect_item_BN$tydatdeltalambda
+
+exValImperfect_item_BN <- mean(Sim_HG_Imperfect_item_BN$tydatdeltalambda[, b + 2])
+varValImperfect_item_BN <- var(Sim_HG_Imperfect_item_BN$tydatdeltalambda[, b + 2])
+PRtyImperfect_item_BN <- colMeans(Sim_HG_Imperfect_item_BN$tydatdeltalambda[, 1:(b + 1)])
+sum(PRtyImperfect_item_BN)
+
+# Group Sensitivity
+Sim_HG_Perfect_group_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 1,lambda = 1,NoSim = 1000,type = "group")
+Sim_HG_Perfect_group_BN$tydatDeltaLambda
+
+exValPerfect_group_BN <- mean(Sim_HG_Perfect_group_BN$tydatDeltaLambda[, b + 2])
+varValPerfect_group_BN <- var(Sim_HG_Perfect_group_BN$tydatDeltaLambda[, b + 2])
+PRtyPerfect_group_BN <- colMeans(Sim_HG_Perfect_group_BN$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyPerfect_group_BN)
+
+Sim_HG_Imperf_Sen_group_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 1,NoSim = 1000,type = "group")
+Sim_HG_Imperf_Sen_group_BN$tydatDeltaLambda
+
+exValImperf_sen_group_BN <- mean(Sim_HG_Imperf_Sen_group_BN$tydatDeltaLambda[, b + 2])
+varValImperf_sen_group_BN <- var(Sim_HG_Imperf_Sen_group_BN$tydatDeltaLambda[, b + 2])
+PRtyImperf_sen_group_BN <- colMeans(Sim_HG_Imperf_Sen_group_BN$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyImperf_sen_group_BN)
+
+Sim_HG_Imperfect_group_BN <- simGroupedBN(N=100,barN=4,Tx=20,b=4,delta = 0.70,lambda = 0.80,NoSim = 1000,type = "group")
+Sim_HG_Imperfect_group_BN$tydatDeltaLambda
+
+exValImperfect_group_BN <- mean(Sim_HG_Imperfect_group_BN$tydatDeltaLambda[, b + 2])
+varValImperfect_group_BN <- var(Sim_HG_Imperfect_group_BN$tydatDeltaLambda[, b + 2])
+PRtyImperfect_group_BN <- colMeans(Sim_HG_Imperfect_group_BN$tydatDeltaLambda[, 1:(b + 1)])
+sum(PRtyImperfect_group_BN)
+
+
+
+# Using detail estimation by ty values : Item level ------------------
 
 Tx_values <- c(0:100)
 # Apply function over all Tx values
@@ -325,7 +419,7 @@ FI_results_case3_AD_Based_item_detail <- FI_results_case3_AD_Based_item_detail[,
 
 
 
-# Using detail estimation by ty values : Group level ------------------ #
+# Using detail estimation by ty values : Group level ------------------
 
 Tx_values <- c(0:100)
 # Apply function over all Tx values
@@ -354,6 +448,9 @@ FI_case1_AD_Based_Group_detail$Model <- "Group-level"
 FI_case1_AD_Based_Group_detail <- FI_case1_AD_Based_Group_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
 
 FI_results_case1_AD_Based_Group_detail <- FI_case1_AD_Based_Group_detail
+
+
+
 
 # For Case 2
 
@@ -407,6 +504,73 @@ FI_results_case3_AD_Based_Group_detail$Model <- "Group-level"
 
 FI_results_case3_AD_Based_Group_detail <- FI_results_case3_AD_Based_Group_detail[,c("Tx","ty","Model","ParamSensitivity","ParamSpecificity","p_ty","dp_ty","FI_Tx")]
 
+
+# Using PMF Method
+
+# For Case 2
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case2_PMF_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "PMF", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+# Combine into a single dataframe
+FI_results_case2_PMF_Based_Group_detail <- bind_rows(FI_results_case2_PMF_Based_Group)
+
+FI_results_case2_PMF_Based_Group_detail <- data.frame(cbind(Tx=FI_results_case2_PMF_Based_Group_detail$Tx,ty=FI_results_case2_PMF_Based_Group_detail$ty,p_ty=FI_results_case2_PMF_Based_Group_detail$p_ty,dp_ty=FI_results_case2_PMF_Based_Group_detail$dp_ty,FI_Tx=FI_results_case2_PMF_Based_Group_detail$FI_Tx))
+View(FI_results_case2_PMF_Based_Group_detail)
+
+ty.values <- c(0:b)
+PRtyDelta.HG.Tx.97 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=97, b, delta=0.70, lambda=1.0))
+PRtyDelta.HG.Tx.98 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=98, b, delta=0.70, lambda=1.0))
+
+4 * sum((sqrt(PRtyDelta.HG.Tx.98) - sqrt(PRtyDelta.HG.Tx.97))^2)
+
+ty.values <- c(0:b)
+PRtyDelta.HG.Tx.99 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=99, b, delta=0.70, lambda=1.0))
+PRtyDelta.HG.Tx.100 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=100, b, delta=0.70, lambda=1.0))
+
+4 * sum((sqrt(PRtyDelta.HG.Tx.100) - sqrt(PRtyDelta.HG.Tx.99))^2)
+
+# For Tx=100, there will be no variation and so FI is zero.
+ty.values <- c(0:b)
+PRtyDelta.HG.Tx.100 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=100, b, delta=0.70, lambda=1.0))
+PRtyDelta.HG.Tx.101 <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx=101, b, delta=0.70, lambda=1.0))
+
+4 * sum((sqrt(PRtyDelta.HG.Tx.100) - sqrt(PRtyDelta.HG.Tx.99))^2)
+
+
+ty.values <- c(0:b)
+PRtyDelta.HG.Tx.97 <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx=97, b, delta=0.70, lambda=1.0))
+PRtyDelta.HG.Tx.98 <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx=98, b, delta=0.70, lambda=1.0))
+
+4 * sum((sqrt(PRtyDelta.HG.Tx.98) - sqrt(PRtyDelta.HG.Tx.97))^2)
+
+
+ty.values <- c(0:b)
+PRtyDelta.HG.Tx.99 <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx=99, b, delta=0.70, lambda=1.0))
+PRtyDelta.HG.Tx.100 <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx=100, b, delta=0.70, lambda=1.0))
+
+4 * sum((sqrt(PRtyDelta.HG.Tx.100) - sqrt(PRtyDelta.HG.Tx.99))^2)
+
+FIpmfHG.Tx.imperfect(Tx=99, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "group")
+FIpmfHG.Tx.imperfect(Tx=100, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "group")
+FIpmfHG.Tx.imperfect(Tx=99, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "item")
+FIpmfHG.Tx.imperfect(Tx=100, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 1, method = "AD", type = "item")
+
+
+
+FIpmfHG.Tx.imperfect(Tx=0, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
+FIpmfHG.Tx.imperfect(Tx=0, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "PMF", type = "item")
+
+FIpmfHG.Tx.imperfect(Tx=1, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
+FIpmfHG.Tx.imperfect(Tx=1, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "PMF", type = "item")
+
+FIpmfHG.Tx.imperfect(Tx=0, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "group")
 
 # Compare with MATLAB PMF -----------------------
 
@@ -522,6 +686,49 @@ Detail_Results_Item_Group <- rbind(FI_results_case1_AD_Based_Group_detail,
       FI_results_case3_AD_Based_item_detail)
 
 write.csv(Detail_Results_Item_Group,file="Figure/Detail_Results_Item_Group.csv")
+
+
+
+# Sanchez-Moreno 2009 Calculation  - Using ty=0 to b-1 : Group level ------------------ #
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case1_SM_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 1.0, lambda = 1.0, method = "SM", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+FI_results_case1_SM_Based_Group_detail <- bind_rows(FI_results_case1_AD_Based_Group_SM)
+
+FI_results_case1_SM_Based_Group_detail <- data.frame(cbind(Tx=FI_results_case1_SM_Based_Group_detail$Tx,ty=FI_results_case1_SM_Based_Group_detail$ty,p_ty=FI_results_case1_SM_Based_Group_detail$p_ty,dp_ty=FI_results_case1_SM_Based_Group_detail$dp_ty,FI_Tx=FI_results_case1_SM_Based_Group_detail$FI_Tx))
+View(FI_results_case1_SM_Based_Group_detail)
+
+tapply(FI_results_case1_SM_Based_Group_detail$p_ty,FI_results_case1_SM_Based_Group_detail$Tx,sum)
+
+
+# Sanchez-Moreno 2009 Calculation  - Using ty=0 to b : Group level ------------------ #
+
+Tx_values <- c(0:100)
+# Apply function over all Tx values
+FI_results_case1_PMF_Based_Group <- lapply(Tx_values, function(Tx) {
+  result <- FIpmfHG.Tx.imperfect.detail(Tx, N = 100, b = 4, barN = 4, delta = 1.0, lambda = 1.0, method = "PMF", type = "group")
+
+  # Extract FI_Tx and ty.data, and add Tx column
+  data.frame(Tx = Tx, FI_Tx = result$FI_Tx, result$ty.data)
+})
+
+FI_results_case1_PMF_Based_Group_detail <- bind_rows(FI_results_case1_AD_Based_Group_PMF)
+
+FI_results_case1_PMF_Based_Group_detail <- data.frame(cbind(Tx=FI_results_case1_PMF_Based_Group_detail$Tx,ty=FI_results_case1_PMF_Based_Group_detail$ty,p_ty=FI_results_case1_PMF_Based_Group_detail$p_ty,dp_ty=FI_results_case1_PMF_Based_Group_detail$dp_ty,FI_Tx=FI_results_case1_PMF_Based_Group_detail$FI_Tx))
+View(FI_results_case1_PMF_Based_Group_detail)
+
+tapply(FI_results_case1_PMF_Based_Group_detail$p_ty,FI_results_case1_PMF_Based_Group_detail$Tx,sum)
+
+
+
+
 
 # PMF Based -----------#
 
@@ -732,19 +939,199 @@ dev.off()
 
 
 
+
+
+
+# FI Figures : HG Distribution using Analytic Derivative (AD) Form ------------------
+# As per the paper : HG Distribution  ---------#
+
+Tx_values <- c(0:100)
+# Different cases: Item level sensitivity
+FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item"))
+FI_case1_AD_Based_Perfect <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.perfect(Tx, N=100, b=4, barN=4, method = "AD"))
+FI_case2_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "item",verbose = FALSE))
+FI_case4_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "item",verbose = FALSE))
+# Different cases: Group level sensitivity
+FI_case1_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "group",verbose = FALSE))
+FI_case2_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "group",verbose = FALSE))
+FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "group",verbose = FALSE))
+
 # FI Figures : HG Distribution using Probability Mass Function (PMF) Based ------------------
 # As per the paper : HG Distribution  ---------#
 
 
 Tx_values <- c(0:100)
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "item"))
-FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "item"))
-FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "item"))
+FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "group"))
-FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "group"))
-FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "group"))
+FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
+
+
+# FI Figures : HG Distribution using Probability Mass Function (SM) Based ------------------
+# As per the paper : HG Distribution  ---------#
+
+
+Tx_values <- c(0:100)
+# Different cases: Item level sensitivity
+FI_case1_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case2_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case4_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "item"))
+# Different cases: Group level sensitivity
+FI_case1_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case2_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case4_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "group"))
+
+
+
+# Comparison among three FI Calculation
+
+
+png("Figure/Comparison FI Estimator.png",width = 8,height = 12,units = "in", res = 300)
+
+par(mfrow=c(3,2))
+
+
+FI_Range <- range(FI_case1_AD_Based_Item,
+                  FI_case1_AD_Based_Group,
+                  FI_case1_PMF_Based_Item,
+                  FI_case1_PMF_Based_Group,
+                  FI_case1_SM_Based_Item,
+                  FI_case1_SM_Based_Group)
+
+plot(Tx_values, FI_case1_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "Perfect Case under HG")
+lines(Tx_values, FI_case1_PMF_Based_Item, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case1_SM_Based_Item, col = "red", lwd = 1, lty = 3)
+points(Tx_values, FI_case1_AD_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_SM_Based_Item, col = "red", pch = 19, cex = 0.3)
+
+legend(60,0.14,
+       legend = c(
+         "Perfect Case: AD",
+         "Perfect Case: PMF(b)",
+         "Perfect Case: PMF(b-1)"
+       ),
+       col = c("black","blue", "red"),
+       lty = c(1,2,3),
+       pch = c(19, 19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+FI_Range <- range(FI_case2_AD_Based_Item,
+                  FI_case2_PMF_Based_Item,
+                  FI_case2_SM_Based_Item)
+
+plot(Tx_values, FI_case2_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "Item-level imperfect sensitivity under HG")
+lines(Tx_values, FI_case2_PMF_Based_Item, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_SM_Based_Item, col = "red", lwd = 1, lty = 3)
+points(Tx_values, FI_case2_AD_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_SM_Based_Item, col = "red", pch = 19, cex = 0.3)
+
+legend(60,0.10,
+       legend = c(
+         bquote(AD: Imperfect ~ D[delta] ),
+         bquote(PMF(b): Imperfect ~ D[delta] ),
+         bquote(PMF(b-1):Imperfect ~ D[delta] )
+       ),
+       col = c("black","blue", "red"),
+       lty = c(1,2,3),
+       pch = c(19, 19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+FI_Range <- range(FI_case4_AD_Based_Item,
+                  FI_case4_PMF_Based_Item,
+                  FI_case4_SM_Based_Item)
+
+plot(Tx_values, FI_case4_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "Item-level imperfect case under HG")
+lines(Tx_values, FI_case4_PMF_Based_Item, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case4_SM_Based_Item, col = "red", lwd = 1, lty = 3)
+points(Tx_values, FI_case4_AD_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_SM_Based_Item, col = "red", pch = 19, cex = 0.3)
+
+legend(50,0.0045,
+       legend = c(
+         bquote(AD: Imperfect ~ D[delta] ~ "," ~ G[lambda]),
+         bquote(PMF(b): Imperfect ~ D[delta] ~ "," ~ G[lambda]),
+         bquote(PMF(b-1):Imperfect ~ D[delta] ~ "," ~ G[lambda])
+       ),
+       col = c("black","blue", "red"),
+       lty = c(1,2,3),
+       pch = c(19, 19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+
+FI_Range <- range(FI_case2_AD_Based_Group,
+                  FI_case2_PMF_Based_Group,
+                  FI_case2_SM_Based_Group)
+
+plot(Tx_values, FI_case2_AD_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "Group-level imperfect sensitivity under HG")
+lines(Tx_values, FI_case2_PMF_Based_Group, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_SM_Based_Group, col = "red", lwd = 1, lty = 3)
+points(Tx_values, FI_case2_AD_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_SM_Based_Group, col = "red", pch = 19, cex = 0.3)
+
+legend(50,0.10,
+       legend = c(
+         bquote(AD: Imperfect ~ D[Delta] ),
+         bquote(PMF(b): Imperfect ~ D[Delta] ),
+         bquote(PMF(b-1):Imperfect ~ D[Delta] )
+       ),
+       col = c("black","blue", "red"),
+       lty = c(1,2,3),
+       pch = c(19, 19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+FI_Range <- range(FI_case4_AD_Based_Group,
+                  FI_case4_PMF_Based_Group,
+                  FI_case4_SM_Based_Group)
+
+plot(Tx_values, FI_case4_AD_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "Group-level imperfect case under HG")
+lines(Tx_values, FI_case4_PMF_Based_Group, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case4_SM_Based_Group, col = "red", lwd = 1, lty = 3)
+points(Tx_values, FI_case4_AD_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_SM_Based_Group, col = "red", pch = 19, cex = 0.3)
+
+legend(50,0.01,
+       legend = c(
+         bquote(AD: Imperfect ~ D[Delta] ~ "," ~ G[Lambda]),
+         bquote(PMF(b): Imperfect ~ D[Delta] ~ "," ~ G[Lambda]),
+         bquote(PMF(b-1):Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+       ),
+       col = c("black","blue", "red"),
+       lty = c(1,2,3),
+       pch = c(19, 19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+
+dev.off()
+
 
 
 png("Figure/Fig 2 HG PMF Based.png",width = 12,height = 6,units = "in", res = 300)
@@ -849,13 +1236,13 @@ FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(T
 
 Tx_values <- c(0:80)
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "item"))
-FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "item"))
-FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "item"))
+FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "group"))
-FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "group"))
-FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "group"))
+FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
 
 
 
@@ -1451,13 +1838,13 @@ dev.off()
 Tx_values <- c(0:80)
 
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "item"))
-FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "item"))
-FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "item"))
+FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "group"))
-FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "group"))
-FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "group"))
+FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
 
 
 
@@ -1576,10 +1963,10 @@ dev.off()
 
 
 
-# FI for HG Distribution  : AD vs PMF ---------#
+# FI for HG Distribution  : AD vs PMF ---------
 
 
-Tx_values <- c(0:80)
+Tx_values <- c(0:100)
 # Different cases: Item level sensitivity
 FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item"))
 FI_case2_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "item"))
@@ -1590,13 +1977,22 @@ FI_case2_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(T
 FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "group"))
 
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "item"))
-FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "item"))
-FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "item"))
+FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "group"))
-FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "group"))
-FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "group"))
+FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
+
+# Different cases: Item level sensitivity
+FI_case1_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case2_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case4_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "item"))
+# Different cases: Group level sensitivity
+FI_case1_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case2_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case4_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "group"))
 
 png("Figure/Fig 2 HG AD PMF.png",width = 12,height = 6,units = "in", res = 300)
 
@@ -1608,16 +2004,13 @@ par(mfrow=c(1,2))
 FI_Range <- range(FI_case1_AD_Based_Item,FI_case2_AD_Based_Item,FI_case4_AD_Based_Item,
                   FI_case1_AD_Based_Group,FI_case2_AD_Based_Group,FI_case4_AD_Based_Group)
 
-FI_Range <- range(FI_case1_PMF_Based_Item,FI_case2_PMF_Based_Item,FI_case4_PMF_Based_Item,
-                  FI_case1_PMF_Based_Group,FI_case2_PMF_Based_Group,FI_case4_PMF_Based_Group)
-
 plot(Tx_values, FI_case1_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
      xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
      main = "AD based FI: All Cases under HG")
-lines(Tx_values, FI_case2_AD_Based_Item, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_AD_Based_Item, col = "blue", lwd = 1, lty = 1)
 lines(Tx_values, FI_case4_AD_Based_Item, col = "blue", lwd = 1, lty = 3)
 
-lines(Tx_values, FI_case2_AD_Based_Group, col = "red", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_AD_Based_Group, col = "red", lwd = 1, lty = 1)
 lines(Tx_values, FI_case4_AD_Based_Group, col = "red", lwd = 1, lty = 3)
 
 # Overlay tiny dots at data points
@@ -1636,7 +2029,7 @@ legend("topright",
          bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
        ),
        col = c("black","blue", "blue", "red", "red"),
-       lty = c(1,2,3,2,3),
+       lty = c(1,1,3,1,3),
        pch = c(19, 19, 19, 19, 19),
        bty = "n", # Remove box around the legend
        cex = 0.8) # Adjust text size
@@ -1650,10 +2043,10 @@ FI_Range <- range(FI_case1_PMF_Based_Item,FI_case2_PMF_Based_Item,FI_case4_PMF_B
 plot(Tx_values, FI_case1_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
      xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
      main = "PMF based FI: All Cases under HG")
-lines(Tx_values, FI_case2_PMF_Based_Item, col = "blue", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_PMF_Based_Item, col = "blue", lwd = 1, lty = 1)
 lines(Tx_values, FI_case4_PMF_Based_Item, col = "blue", lwd = 1, lty = 3)
 
-lines(Tx_values, FI_case2_PMF_Based_Group, col = "red", lwd = 1, lty = 2)
+lines(Tx_values, FI_case2_PMF_Based_Group, col = "red", lwd = 1, lty = 1)
 lines(Tx_values, FI_case4_PMF_Based_Group, col = "red", lwd = 1, lty = 3)
 
 # Overlay tiny dots at data points
@@ -1672,7 +2065,7 @@ legend("topright",
          bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
        ),
        col = c("black","blue", "blue", "red", "red"),
-       lty = c(1,2,3,2,3),
+       lty = c(1,1,3,1,3),
        pch = c(19, 19, 19, 19, 19),
        bty = "n", # Remove box around the legend
        cex = 0.8) # Adjust text size
@@ -1684,10 +2077,135 @@ dev.off()
 
 
 
-# FI for BN Distribution  : AD vs PMF ---------#
+png("Figure/Fig 2 HG PMF HI SM.png",width = 12,height = 8,units = "in", res = 300)
+
+par(mfrow=c(2,3))
 
 
-Tx_values <- c(0:80)
+# Plot results: Item level
+
+FI_Range <- range(FI_case1_AD_Based_Item,FI_case1_PMF_Based_Item,FI_case1_PMF_SM_Based_Item)
+
+plot(Tx_values, FI_case1_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Perfect Case under HG")
+lines(Tx_values, FI_case1_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case1_AD_Based_Item, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case1_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
+
+legend("topright",
+       legend = c(
+         "PMF(b): Perfect Case",
+         "PMF(b-1): Perfect Case",
+         "AD: Perfect Case"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1),
+       pch = c(19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+
+FI_Range <- range(FI_case2_AD_Based_Item,FI_case2_PMF_Based_Item,FI_case2_PMF_SM_Based_Item)
+plot(Tx_values, FI_case2_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Item-level imperperfect sensitivity")
+lines(Tx_values, FI_case2_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case2_AD_Based_Item, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case2_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity",
+         "PMF(b-1): Imperfect Sensitivity",
+         "AD: Imperfect Sensitivity"
+       ),
+       col = c("black","blue"),
+       lty = c(1,1),
+       pch = c(19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+FI_Range <- range(FI_case4_AD_Based_Item,FI_case4_PMF_Based_Item,FI_case4_PMF_SM_Based_Item)
+plot(Tx_values, FI_case4_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Item-level imperperfect sensitivity and specificity")
+lines(Tx_values, FI_case4_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case4_AD_Based_Item, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case4_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity & Specificity",
+         "PMF(b-1): Imperfect  & Specificity",
+         "AD: Imperfect  & Specificity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+
+
+FI_Range <- range(FI_case2_AD_Based_Group,FI_case2_PMF_Based_Group,FI_case2_PMF_SM_Based_Group)
+plot(Tx_values, FI_case2_PMF_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Group-level imperperfect sensitivity")
+lines(Tx_values, FI_case2_PMF_SM_Based_Group, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case2_AD_Based_Group, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case2_PMF_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_SM_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity",
+         "PMF(b-1): Imperfect Sensitivity",
+         "AD: Imperfect Sensitivity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+FI_Range <- range(FI_case4_AD_Based_Group,FI_case4_PMF_Based_Group,FI_case4_PMF_SM_Based_Group)
+plot(Tx_values, FI_case4_PMF_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Group-level imperperfect sensitivity and specificity")
+lines(Tx_values, FI_case4_PMF_SM_Based_Group, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case4_AD_Based_Group, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case4_PMF_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_SM_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity & Specificity",
+         "PMF(b-1): Imperfect  & Specificity",
+         "AD: Imperfect  & Specificity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+dev.off()
+
+
+
+# FI for BN Distribution  : AD vs PMF ---------
+
+
+Tx_values <- c(0:100)
 # Different cases: Item level sensitivity
 FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item"))
 FI_case2_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "AD", type = "item"))
@@ -1698,13 +2216,24 @@ FI_case2_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(T
 FI_case4_AD_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "AD", type = "group"))
 
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "item"))
-FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "item"))
-FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "item"))
+FI_case1_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF", type = "group"))
-FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF", type = "group"))
-FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF", type = "group"))
+FI_case1_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
+
+
+# Different cases: Item level sensitivity
+FI_case1_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case2_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "item"))
+FI_case4_PMF_SM_Based_Item <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "item"))
+# Different cases: Group level sensitivity
+FI_case1_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case2_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-SM", type = "group"))
+FI_case4_PMF_SM_Based_Group <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-SM", type = "group"))
+
 
 png("Figure/Fig 2 BN AD PMF.png",width = 12,height = 6,units = "in", res = 300)
 
@@ -1716,9 +2245,6 @@ par(mfrow=c(1,2))
 FI_Range <- range(FI_case1_AD_Based_Item,FI_case2_AD_Based_Item,FI_case4_AD_Based_Item,
                   FI_case1_AD_Based_Group,FI_case2_AD_Based_Group,FI_case4_AD_Based_Group)
 
-FI_Range <- range(FI_case1_PMF_Based_Item,FI_case2_PMF_Based_Item,FI_case4_PMF_Based_Item,
-                  FI_case1_PMF_Based_Group,FI_case2_PMF_Based_Group,FI_case4_PMF_Based_Group)
-
 
 plot(Tx_values, FI_case1_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
      xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
@@ -1736,7 +2262,7 @@ points(Tx_values, FI_case4_AD_Based_Item, col = "blue", pch = 19, cex = 0.3)
 points(Tx_values, FI_case2_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
 points(Tx_values, FI_case4_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
 
-legend("topright",
+legend(40,0.15,
        legend = c(
          "Perfect Case",
          bquote(Imperfect ~ D[delta] ),
@@ -1772,7 +2298,7 @@ points(Tx_values, FI_case4_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
 points(Tx_values, FI_case2_PMF_Based_Group, col = "red", pch = 19, cex = 0.3)
 points(Tx_values, FI_case4_PMF_Based_Group, col = "red", pch = 19, cex = 0.3)
 
-legend("topright",
+legend(40,0.08,
        legend = c(
          "Perfect Case",
          bquote(Imperfect ~ D[delta] ),
@@ -1793,87 +2319,126 @@ dev.off()
 
 
 
-png("Figure/Fig 2 BN AD PMF BB.png",width = 12,height = 6,units = "in", res = 300)
+png("Figure/Fig 2 BN PMF HI SM.png",width = 12,height = 8,units = "in", res = 300)
 
-par(mfrow=c(1,2))
-
-
-# Plot results: Group level
-
-FI_Range <- range(FI_case1_AD_Based_Item,FI_case2_AD_Based_Item,FI_case4_AD_Based_Item,
-                  FI_case1_AD_Based_Group,FI_case2_AD_Based_Group,FI_case4_AD_Based_Group)
-
-FI_Range <- range(FI_case1_PMF_Based_Item,FI_case2_PMF_Based_Item,FI_case4_PMF_Based_Item,
-                  FI_case1_PMF_Based_Group,FI_case2_PMF_Based_Group,FI_case4_PMF_Based_Group)
-
-FI_Range <- c(0,0.02)
-plot(Tx_values, FI_case1_AD_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
-     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
-     main = "AD based FI: All Cases under BN")
-lines(Tx_values, FI_case2_AD_Based_Item, col = "blue", lwd = 1, lty = 2)
-lines(Tx_values, FI_case4_AD_Based_Item, col = "blue", lwd = 1, lty = 3)
-
-lines(Tx_values, FI_case2_AD_Based_Group, col = "red", lwd = 1, lty = 2)
-lines(Tx_values, FI_case4_AD_Based_Group, col = "red", lwd = 1, lty = 3)
-
-# Overlay tiny dots at data points
-points(Tx_values, FI_case1_AD_Based_Item, col = "black", pch = 19, cex = 0.3)
-points(Tx_values, FI_case2_AD_Based_Item, col = "blue", pch = 19, cex = 0.3)
-points(Tx_values, FI_case4_AD_Based_Item, col = "blue", pch = 19, cex = 0.3)
-points(Tx_values, FI_case2_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
-points(Tx_values, FI_case4_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
-
-legend("topright",
-       legend = c(
-         "Perfect Case",
-         bquote(Imperfect ~ D[delta] ),
-         bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
-         bquote(Imperfect ~ D[Delta] ),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
-       ),
-       col = c("black","blue", "blue", "red", "red"),
-       lty = c(1,2,3,2,3),
-       pch = c(19, 19, 19, 19, 19),
-       bty = "n", # Remove box around the legend
-       cex = 0.8) # Adjust text size
+par(mfrow=c(2,3))
 
 
+# Plot results: Item level
 
-
-FI_Range <- range(FI_case1_PMF_Based_Item,FI_case2_PMF_Based_Item,FI_case4_PMF_Based_Item,
-                  FI_case1_PMF_Based_Group,FI_case2_PMF_Based_Group,FI_case4_PMF_Based_Group)
+FI_Range <- range(FI_case1_AD_Based_Item,FI_case1_PMF_Based_Item,FI_case1_PMF_SM_Based_Item)
 
 plot(Tx_values, FI_case1_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
      xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
-     main = "PMF based FI: All Cases under BN")
-lines(Tx_values, FI_case2_PMF_Based_Item, col = "blue", lwd = 1, lty = 2)
-lines(Tx_values, FI_case4_PMF_Based_Item, col = "blue", lwd = 1, lty = 3)
-
-lines(Tx_values, FI_case2_PMF_Based_Group, col = "red", lwd = 1, lty = 2)
-lines(Tx_values, FI_case4_PMF_Based_Group, col = "red", lwd = 1, lty = 3)
-
-# Overlay tiny dots at data points
+     main = "FI: Perfect Case  under BN")
+lines(Tx_values, FI_case1_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case1_AD_Based_Item, col = "red", lwd = 1, lty = 1)
 points(Tx_values, FI_case1_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
-points(Tx_values, FI_case2_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
-points(Tx_values, FI_case4_PMF_Based_Item, col = "blue", pch = 19, cex = 0.3)
-points(Tx_values, FI_case2_PMF_Based_Group, col = "red", pch = 19, cex = 0.3)
-points(Tx_values, FI_case4_PMF_Based_Group, col = "red", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case1_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
 
 legend("topright",
        legend = c(
-         "Perfect Case",
-         bquote(Imperfect ~ D[delta] ),
-         bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
-         bquote(Imperfect ~ D[Delta] ),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+         "PMF(b): Perfect Case",
+         "PMF(b-1): Perfect Case",
+         "AD: Perfect Case"
        ),
-       col = c("black","blue", "blue", "red", "red"),
-       lty = c(1,2,3,2,3),
-       pch = c(19, 19, 19, 19, 19),
+       col = c("black","blue","red"),
+       lty = c(1,1),
+       pch = c(19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+
+FI_Range <- range(FI_case2_AD_Based_Item,FI_case2_PMF_Based_Item,FI_case2_PMF_SM_Based_Item)
+plot(Tx_values, FI_case2_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Item-level imperperfect sensitivity")
+lines(Tx_values, FI_case2_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case2_AD_Based_Item, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case2_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity",
+         "PMF(b-1): Imperfect Sensitivity",
+         "AD: Imperfect Sensitivity"
+       ),
+       col = c("black","blue"),
+       lty = c(1,1),
+       pch = c(19, 19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
+FI_Range <- range(FI_case4_AD_Based_Item,FI_case4_PMF_Based_Item,FI_case4_PMF_SM_Based_Item)
+plot(Tx_values, FI_case4_PMF_Based_Item, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Item-level imperperfect sensitivity and specificity")
+lines(Tx_values, FI_case4_PMF_SM_Based_Item, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case4_AD_Based_Item, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case4_PMF_Based_Item, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_SM_Based_Item, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_AD_Based_Item, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity & Specificity",
+         "PMF(b-1): Imperfect  & Specificity",
+         "AD: Imperfect  & Specificity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
        bty = "n", # Remove box around the legend
        cex = 0.8) # Adjust text size
 
 
 
 
+FI_Range <- range(FI_case2_AD_Based_Group,FI_case2_PMF_Based_Group,FI_case2_PMF_SM_Based_Group)
+plot(Tx_values, FI_case2_PMF_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Group-level imperperfect sensitivity")
+lines(Tx_values, FI_case2_PMF_SM_Based_Group, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case2_AD_Based_Group, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case2_PMF_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_PMF_SM_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case2_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity",
+         "PMF(b-1): Imperfect Sensitivity",
+         "AD: Imperfect Sensitivity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+FI_Range <- range(FI_case4_AD_Based_Group,FI_case4_PMF_Based_Group,FI_case4_PMF_SM_Based_Group)
+plot(Tx_values, FI_case4_PMF_Based_Group, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
+     xlab = "Tx (Number of Contaminated Items)", ylab = "Fisher Information",
+     main = "FI: Group-level imperperfect sensitivity and specificity")
+lines(Tx_values, FI_case4_PMF_SM_Based_Group, col = "blue", lwd = 1, lty = 1)
+lines(Tx_values, FI_case4_AD_Based_Group, col = "red", lwd = 1, lty = 1)
+points(Tx_values, FI_case4_PMF_Based_Group, col = "black", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_PMF_SM_Based_Group, col = "blue", pch = 19, cex = 0.3)
+points(Tx_values, FI_case4_AD_Based_Group, col = "red", pch = 19, cex = 0.3)
+legend("topright",
+       legend = c(
+         "PMF(b): Imperfect Sensitivity & Specificity",
+         "PMF(b-1): Imperfect  & Specificity",
+         "AD: Imperfect  & Specificity"
+       ),
+       col = c("black","blue","red"),
+       lty = c(1,1,1),
+       pch = c(19, 19,19),
+       bty = "n", # Remove box around the legend
+       cex = 0.8) # Adjust text size
+
+
 dev.off()
+

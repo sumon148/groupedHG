@@ -29,5 +29,5 @@ Computes the probability mass function (PMF) for a grouped Binomial distribution
 under the assumption of item-level imperfect test (false positives or false negatives).
 }
 \examples{
-pmfBN.imperfect.group(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
+pmfBN.imperfect.item(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
 }

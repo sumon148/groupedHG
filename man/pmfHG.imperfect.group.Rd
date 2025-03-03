@@ -32,5 +32,5 @@ accounting for false negative rate (\eqn{\Delta}) and false positive rate (\eqn{
 }
 \examples{
 # Example usage:
-pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
+pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 }

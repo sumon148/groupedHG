@@ -74,7 +74,7 @@ safe_digamma <- function(x) {
 #' @param b Total number of groups.
 #' @return The probability mass function (PMF) value for the given parameters.
 #' @examples
-#' pmfHG.perfect(ty = 2, N = 100, barN = 10, Tx = 20, b = 5)
+#' pmfHG.perfect(ty = 2, N = 100, barN = 4, Tx = 20, b = 4)
 #' @export
 pmfHG.perfect <- function(ty, N, barN, Tx, b) {
   # Initialize the outer binomial coefficient
@@ -101,6 +101,8 @@ pmfHG.perfect <- function(ty, N, barN, Tx, b) {
     } else if (exclusion_population >= Tx) {
       # Compute the hypergeometric probability
       hypergeo_prob <- choose_custom_log(exclusion_population, Tx) / choose_custom_log(N, Tx)
+    } else {
+      hypergeo_prob <- 0  # Set to 0 if none of the above conditions are met
     }
       # Calculate the inclusion-exclusion term
       term <- (-1)^(ty - j) * inner_binomial * hypergeo_prob
@@ -166,10 +168,14 @@ dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
         hypergeo_prob <- choose_custom_log(N-Tx, group_size) / choose_custom_log(N, group_size)
         # Compute the derivative term using the digamma function
         digamma_term <- safe_digamma(N - Tx - group_size + 1) - safe_digamma(N - Tx + 1) # paper
+
         # digamma_term <- safe_digamma(N - Tx + 1) - safe_digamma(N - Tx - group_size + 1) - safe_digamma(Tx + 1) # ChatGPT
         der_hypergeo_prob <- hypergeo_prob * digamma_term
       } else {
-        if (verbose){
+        der_hypergeo_prob <- 0  # Set to 0 if none of the above conditions are met
+        }
+
+      if (verbose){
           # Debugging output for intermediate values (optional)
           cat("  j =", j,
               "| inner_binomial =", inner_binomial,
@@ -177,8 +183,8 @@ dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
               "| digamma_term =", digamma_term,
               "| term =", term, "\n")
         }
-        next
-      }
+
+
 
       # Inclusion-exclusion term with alternating signs
       term <- (-1)^(ty - j) * inner_binomial * der_hypergeo_prob
@@ -216,7 +222,7 @@ dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
 #'   }
 #' @return Numeric. Fisher Information for the given \eqn{T_x}.
 #' @export
-FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND", "PMF")) {
+FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND","PMF-HI","PMF-SM")) {
 
   FI_Tx <- 0  # Initialize Fisher Information
 
@@ -240,11 +246,21 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND", "PMF")) {
         FI_Tx <- FI_Tx + (dP_Tx^2 / P_ty)
       }
 
-    } else if (method == "PMF") {
-      # Method: PMF-based approximation (PMF)
+    } else if (method == "PMF-HI") {
+      # Method: PMF-based approximation (PMF) using ty=0 to b
       P_ty_Tx_plus1 <- pmfHG.perfect(ty, N, barN, Tx + 1, b)
       if (P_ty_Tx_plus1 > 0) {
         FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
+      }
+
+    } else if (method == "PMF-SM") {
+
+      # Method: PMF-based approximation (PMF) using ty=0 to b-1
+      P_ty_Tx_plus1 <- pmfHG.perfect(ty, N, barN, Tx + 1, b)
+      if (P_ty_Tx_plus1 > 0 && ty<b) {
+        FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
+      } else {
+        FI_Tx <- FI_Tx + 0
       }
 
     } else if (method == "ND") {
@@ -297,8 +313,6 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
     for (i in 0:ell) {
       # Calculate the exclusion population size
       exclusion_population <- N - barN * (k - (ell - i))
-
-
       inner_sum <- inner_sum + ifelse(
         exclusion_population == Tx && Tx == 0, 1,
         ifelse(exclusion_population >= Tx,
@@ -335,6 +349,7 @@ qDLkGroup <- function(k, N, Tx, barN, delta, lambda) {
 #' @rdname dqDLkGroup
 #' @export
 dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
+  # This one is complicated
   # Step 1: Function Purpose
   # This function calculates the derivative of q_{Delta, Lambda, k} with respect to T_x for the grouped case.
   # The calculation follows Equation 26, considering a grouped population model with false negative and false positive rates.
@@ -409,6 +424,49 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
 }
 
 
+
+dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
+  # Input validation
+  if (N <= 0 || Tx < 0 || barN <= 0 || delta < 0 || delta > 1 || lambda < 0 || lambda > 1) {
+    stop("Invalid input parameters.")
+  }
+
+  # Precompute constant values
+  total_choose <- choose_custom_log(N, Tx)
+
+  # Initialize q_Delta_Lambda_k to 0
+  dq_Delta_Lambda_k <- 0
+
+  # Outer loop: iterate over ell from 0 to k
+  for (ell in 0:k) {
+    # Initialize the inner summation for the current value of ell
+    inner_sum <- 0
+
+    # Inner loop: iterate over i from 0 to ell
+    for (i in 0:ell) {
+      # Calculate the exclusion population size
+      exclusion_population <- N - barN * (k - (ell - i))
+      inner_sum <- inner_sum + ifelse(
+        exclusion_population == Tx && Tx == 0, 1,
+        ifelse(exclusion_population >= Tx,
+               (-1)^i * choose_custom_log(ell, i) * (choose_custom_log(exclusion_population, Tx) / total_choose) *
+                 (safe_digamma(N - Tx - (k - (ell - i)) * barN + 1) - safe_digamma(N - Tx + 1)),   # Extra Part
+               0
+        )
+      )
+
+    }
+
+    # Add the contribution from the current ell to q_Delta_Lambda_k
+    dq_Delta_Lambda_k <- dq_Delta_Lambda_k + choose_custom_log(k, ell) * inner_sum *
+      (1 - delta)^ell * lambda^(k - ell)
+  }
+
+  # Return the computed value of q_Delta_Lambda_k
+  return(dq_Delta_Lambda_k)
+}
+
+
 #' PMF for Imperfect Group-Level Sensitivity and Specificity
 #'
 #' Computes the probability mass function (PMF) for group-level sensitivity and specificity,
@@ -425,7 +483,7 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
 #' @return Numeric. The computed PMF value adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
-#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
+#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
 pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
 
@@ -498,7 +556,7 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
 #' @return Numeric. The derivative of the computed PMF value w.r.t Tx adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
-#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 10, Tx = 20, b = 10, delta = 0.1, lambda = 0.05)
+#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
 dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
   # Derivative of PMF with respect to Tx (following Equation 26)
@@ -554,7 +612,6 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = 
 }
 
 
-
 #' Compute \eqn{q_{\delta \lambda k} } for Item-Level Sensitivity and Specificity
 #'
 #' Calculates the probability \eqn{q_{\delta \lambda k} } that none of the items
@@ -572,7 +629,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = 
 #' @name qdlkItem
 #' @rdname qdlkItem
 #' @examples
-#' qdlkqdlkItem(k = 3, N = 100, Tx = 5, barN = 10, delta = 0.1, lambda = 0.05)
+#' qdlkqdlkItem(k = 3, N = 100, Tx = 20, barN = 4, delta = 0.7, lambda = 0.8)
 #' @export
 qdlkItem <- function(k, N, Tx, barN, delta, lambda, verbose=TRUE) {
   # Function to compute qδλk for item-level sensitivity and specificity (Equation 13)
@@ -642,7 +699,7 @@ qdlkItem <- function(k, N, Tx, barN, delta, lambda, verbose=TRUE) {
 #' @name dqdlkItem
 #' @rdname dqdlkItem
 #' @examples
-#' dqdlk(k = 3, N = 100, Tx = 5, barN = 10, delta = 0.1, lambda = 0.05)
+#' dqdlk(k = 3, N = 100, Tx = 20, barN = 4, delta = 0.7, lambda = 0.8)
 #' @export
 dqdlkItem <- function(k, N, Tx, barN, delta, lambda) {
   # Function to compute the derivative of q_delta_lambda_item_k
@@ -715,7 +772,7 @@ dqdlkItem <- function(k, N, Tx, barN, delta, lambda) {
 #' @return Numeric. The computed probability mass function value.
 #' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @examples
-#' pmfHG.imperfect.item(ty = 2, N = 100, barN = 10, Tx = 5, b = 5, delta = 0.1, lambda = 0.05)
+#' pmfHG.imperfect.item(ty = 2, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
 pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
   # Function to calculate PMF (Probability Mass Function) with item-level sensitivity and specificity.
@@ -731,7 +788,7 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
 
   pmf <- 0  # Initialize probability to zero
 
-  if (ty > b || ty > Tx && lambda==1) {  # ty must be <= min(b, Tx)
+  if (ty > b || (ty > Tx) && (lambda == 1)) {  # ty must be <= min(b, Tx)
     return(pmf)
   }
 
@@ -743,8 +800,6 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
 
   # Loop over possible values of `j` to compute inclusion-exclusion terms for each possible contamination level
   for (j in 0:ty) {
-    # Adjust the population for excluded groups: those not included in the current set of contaminated groups
-    exclusion_population <- N - barN * (b - j)
     q_delta_lambda_item <- qdlkItem(b - j, N, Tx, barN, delta, lambda, verbose)
     # Compute the term for inclusion-exclusion
     # The term adjusts for how many items are included or excluded from the contamination set
@@ -786,13 +841,13 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
 #' @param lambda Numeric. False positive rate (item-level probability of a true negative being falsely identified as positive).
 #' @return Numeric. The derivative of the PMF with respect to `Tx`.
 #' @examples
-#' dpmfHG.imperfect.item(ty = 3, N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05)
+#' dpmfHG.imperfect.item(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
 dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
 
   pmf <- pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose )
 
-  if (ty > b || (ty > Tx && lambda == 1) || (pmf == 0 && lambda == 1)) {
+  if (ty > b || (ty > Tx) && (lambda == 1) || (pmf == 0 && lambda == 1)) {
     return(0)
   }
 
@@ -802,40 +857,12 @@ dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRU
   sum_inclusion_exclusion_derivative <- 0
 
   for (j in 0:ty) {
-    exclusion_population <- N - barN * (b - j)
-
-    # Handle special cases
-    if (exclusion_population < 0) {
-      next  # Skip this iteration as the exclusion population is invalid
-    } else if (exclusion_population == Tx && Tx == 0) {
-      dq_delta_lambda_item <- 1  # Set to 1 when both are zero
-    } else if (exclusion_population >= Tx) {
-      # Compute dq(Delta, Lambda, k) which considers the sensitivity (Delta) and specificity (Lambda)
-      dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
-    } else {
-      if (verbose) {
-        # Debug message for invalid terms where the exclusion population is not sufficient
-        cat("Skipping invalid term: j =", j,
-            "| exclusion_population =", exclusion_population,
-            "| Tx =", Tx, "\n")
-      }
-      next
-    }
-
-
-
-#    if (exclusion_population >= Tx) {
-#      dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
-      term_derivative <- (-1)^(ty - j) * choose_custom_log(ty, j) * dq_delta_lambda_item
-      sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative + term_derivative
- #   }
-  }
+    dq_delta_lambda_item <- dqdlkItem(b - j, N, Tx, barN, delta, lambda)
+    term_derivative <- (-1)^(ty - j) * choose_custom_log(ty, j) * dq_delta_lambda_item
+    sum_inclusion_exclusion_derivative <- sum_inclusion_exclusion_derivative + term_derivative
+   }
 
   pmf_derivative <- outer_binomial * sum_inclusion_exclusion_derivative
-  #  } else {
-  #    pmf_derivative <- 0
-
-
   return(pmf_derivative)
 }
 
@@ -850,14 +877,14 @@ dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRU
 #' @param b Integer. Total number of groups.
 #' @param delta Numeric. False negative rate.
 #' @param lambda Numeric. False positive rate.
-#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), or `"PMF"` (PMF-based approximation).
+#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), `"PMF-SM"` (PMF-based approximation using Sanchez-Moreno et al (2009) paper where ty=0 to (b-1)), or `"PMF-HI"` (where ty=0 to b used as in Shemyakin (2023)).
 #' @param type Character. Detection type. One of `"group"` or `"item"`.
 #' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The calculated Fisher Information.
 #' @examples
-#' FIpmfHG.Tx.imperfect(N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05, method = "AD", type = "item")
+#' FIpmfHG.Tx.imperfect(N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
 #' @export
-FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF"), type = c("group", "item"),verbose=TRUE) {
+FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF-HI","PMF-SM"), type = c("group", "item"),verbose=TRUE) {
   FI_Tx <- 0
   method <- match.arg(method)
   type <- match.arg(type)
@@ -883,7 +910,7 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
       FI_Tx <- FI_Tx + (dP_Tx^2 / P_ty)
     }
 
-    if (method == "PMF") {
+    if (method == "PMF-HI") {
       P_ty_Tx_plus1 <- if (type == "group") {
         pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
@@ -894,6 +921,21 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
         FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
       }
     }
+
+    if (method == "PMF-SM") {
+      P_ty_Tx_plus1 <- if (type == "group") {
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      } else {
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      }
+
+      if (P_ty_Tx_plus1 > 0 && P_ty > 0 && ty < b) {
+        FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
+      } else {
+        FI_Tx <- FI_Tx + 0
+      }
+    }
+
 
     if (method == "ND") {
       P_plus <- if (type == "group") {
@@ -911,6 +953,7 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
   return(FI_Tx)
 }
 
+
 #' Fisher Information for Imperfect Detection
 #'
 #' This function calculates the Fisher Information for imperfect detection using different
@@ -922,14 +965,14 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 #' @param b Integer. Total number of groups.
 #' @param delta Numeric. False negative rate.
 #' @param lambda Numeric. False positive rate.
-#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), or `"PMF"` (PMF-based approximation).
+#' @param method Character. Method for computing Fisher Information. One of `"AD"` (analytic derivative), `"ND"` (numerical derivative), `"PMF-SM"` (PMF-based approximation using Sanchez-Moreno et al (2009) paper where ty=0 to (b-1)), or `"PMF-HI"` (where ty=0 to b used as in Shemyakin (2023)).
 #' @param type Character. Detection type. One of `"group"` or `"item"`.
 #' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The calculated Fisher Information.
 #' @examples
-#' FIpmfHG.Tx.imperfect(N = 100, barN = 10, Tx = 5, b = 10, delta = 0.1, lambda = 0.05, method = "AD", type = "item")
+#' FIpmfHG.Tx.imperfect(N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
 #' @export
-FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF"), type = c("group", "item"), verbose = TRUE) {
+FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF-HI","PMF-SM"), type = c("group", "item"), verbose = TRUE) {
   FI_Tx <- 0
   method <- match.arg(method)
   type <- match.arg(type)
@@ -962,7 +1005,7 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
       FI_Tx <- FI_Tx + (dP_Tx^2 / P_ty)
     }
 
-    if (method == "PMF") {
+    if (method == "PMF-HI") {
       P_ty_Tx_plus1 <- if (type == "group") {
         pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
@@ -973,6 +1016,21 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
         FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
       }
     }
+
+    if (method == "PMF-SM") {
+      P_ty_Tx_plus1 <- if (type == "group") {
+        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      } else {
+        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+      }
+
+      if (P_ty_Tx_plus1 > 0 && P_ty > 0 && ty < b) {
+        FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
+      } else {
+        FI_Tx <- FI_Tx + 0
+      }
+    }
+
 
     if (method == "ND") {
       P_plus <- if (type == "group") {
@@ -985,7 +1043,8 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
         FI_Tx <- FI_Tx + ((P_plus - P_ty)^2 / P_ty)
       }
     }
-  }
+
+}
 
   # Create the data frame ensuring p_ty = 0 for ty > Tx
   ty.data <- data.frame(ty = 0:b, p_ty = P_ty_vector)
@@ -1143,4 +1202,271 @@ ExpVarHG.imperfect <- function(N, Tx, barN, b, delta, lambda, type = c("group", 
     expectation = ExpVarHG$expectation,
     variance = ExpVarHG$variance
   ))
+}
+
+
+#' Simulate Grouped Hypergeometric Sampling with Sensitivity and Specificity Adjustments
+#'
+#' This function simulates a grouped hypergeometric sampling process, accounting for imperfect sensitivity and specificity in detection.
+#'
+#' @param N Integer. The total population size.
+#' @param barN Integer. The group size.
+#' @param Tx Integer. The number of infectives in the population.
+#' @param b Integer. The number of group samples.
+#' @param delta Numeric (0 to 1). Sensitivity of detection (delta = 1 removes sensitivity issues).
+#' @param lambda Numeric (0 to 1). Specificity of detection (lambda = 1 removes specificity issues).
+#' @param NoSim Integer. The number of simulation iterations.
+#' @param type Character. Either `"item"` or `"group"`, specifying the detection model.
+#'
+#' @return A list containing simulation results:
+#'   - If `type = "item"`:
+#'     - `tydat`: Matrix of total detections under perfect test.
+#'     - `tydatdelta`: Matrix of detections considering sensitivity.
+#'     - `tydatlambda`: Matrix of detections considering specificity.
+#'     - `tydatdeltalambda`: Matrix of detections considering both sensitivity and specificity.
+#'   - If `type = "group"`:
+#'     - `tydat`: Matrix of total detections under perfect test.
+#'     - `tydatDelta`: Matrix of detections considering sensitivity.
+#'     - `tydatLambda`: Matrix of detections considering specificity.
+#'     - `tydatDeltaLambda`: Matrix of detections considering both sensitivity and specificity.
+#'  For both cases, the results with sensitivity and specificity will be used for simulation
+#' @examples
+#' simGroupedHG(N = 1000, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, NoSim = 100, type = "item")
+#'
+#' @export
+simGroupedHG <- function(N,            # Population size
+                         barN,           # Group size
+                         Tx,            # Number of infectives in the population
+                         b,              # Number of group samples
+                         delta,        # Sensitivity (0 to 1, =1 removes sensitivity issues)
+                         lambda,        # Specificity (0 to 1, =1 removes specificity issues)
+                         NoSim,     # Number of simulations
+                         type=c("item","group")) {
+
+  tydat <- matrix(0, nrow = NoSim, ncol = b + 2)
+  if(type=="item"){
+    tydatdelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatlambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatdeltalambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  } else {
+    tydatDelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatDeltaLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  }
+
+  set.seed(123456)
+
+
+  for (j in 1:NoSim) {
+    if(type=="item"){
+      ty <- tydelta <- tylambda <- tydeltalambda <- 0 } else {
+        ty <- tyDelta <- tyLambda <- tyDeltaLambda <- 0
+      }
+    sX <- 0
+
+    for (i in 1:b) {
+      # Hypergeometric sampling for the number of infectives in the current group
+      getX <- rhyper(1, Tx - sX, N - Tx - sX, barN)
+      sX <- sX + getX
+
+      # Sensitivity-based detection
+      Y <- rbinom(getX, 1, delta)
+      # Specificity-based detection
+      Z <- rbinom(barN - getX, 1, 1 - lambda)
+
+
+      # Total detection
+      getY <- sum(Y)
+      getZ <- sum(Z)
+      getYZ <- getY + getZ
+
+      if (getX > 0) ty <- ty + 1
+
+      if(type=="item"){
+        # Update counts for various detection cases
+        if (getY > 0) tydelta <- tydelta + 1
+        if (getZ > 0) tylambda <- tylambda + 1
+        if (getYZ > 0) tydeltalambda <- tydeltalambda + 1
+      } else {
+        # Delta and Lambda detections
+        Dv <- rbinom(1, 1, delta)
+        Gv <- rbinom(1, 1, lambda)
+
+        if (getX > 0 && Dv > 0) tyDelta <- tyDelta + 1
+        if (getX == 0 && Gv == 0) tyLambda <- tyLambda + 1
+        if ((getX > 0 && Dv > 0) || (getX == 0 && Gv == 0)) tyDeltaLambda <- tyDeltaLambda + 1
+
+      }
+
+      # Store results
+      tydat[j, b + 2] <- ty
+
+      if(type=="item"){
+
+        tydatdelta[j, b + 2] <- tydelta
+        tydatlambda[j, b + 2] <- tylambda
+        tydatdeltalambda[j, b + 2] <- tydeltalambda } else {
+          tydatDelta[j, b + 2] <- tyDelta
+          tydatLambda[j, b + 2] <- tyLambda
+          tydatDeltaLambda[j, b + 2] <- tyDeltaLambda
+        }
+
+    }
+
+    for (i in 1:(b + 1)) {
+
+      if (ty == (i - 1)) tydat[j, i] <- 1
+
+      if(type=="item"){
+        if (tydelta == (i - 1)) tydatdelta[j, i] <- 1
+        if (tylambda == (i - 1)) tydatlambda[j, i] <- 1
+        if (tydeltalambda == (i - 1)) tydatdeltalambda[j, i] <- 1}else {
+
+          if (tyDelta == (i - 1)) tydatDelta[j, i] <- 1
+          if (tyLambda == (i - 1)) tydatLambda[j, i] <- 1
+          if (tyDeltaLambda == (i - 1)) tydatDeltaLambda[j, i] <- 1 }
+
+    }
+  }
+
+  if(type=="item"){
+    list(tydat=tydat,tydatdelta=tydatdelta,tydatlambda=tydatlambda,tydatdeltalambda=tydatdeltalambda)} else {
+      list(tydat=tydat,tydatDelta=tydatDelta,tydatLambda=tydatLambda,tydatDeltaLambda=tydatDeltaLambda)}
+
+}
+
+
+#' Simulate Grouped Binomial Sampling with Sensitivity and Specificity Adjustments
+#'
+#' This function simulates a grouped binomial sampling process, accounting for imperfect sensitivity and specificity in detection.
+#'
+#' @param N Integer. The total population size.
+#' @param barN Integer. The group size.
+#' @param Tx Integer. The number of infectives in the population.
+#' @param b Integer. The number of group samples.
+#' @param delta Numeric (0 to 1). Sensitivity of detection (delta = 1 removes sensitivity issues).
+#' @param lambda Numeric (0 to 1). Specificity of detection (lambda = 1 removes specificity issues).
+#' @param NoSim Integer. The number of simulation iterations.
+#' @param type Character. Either `"item"` or `"group"`, specifying the detection model.
+#'
+#' @return A list containing simulation results:
+#'   - If `type = "item"`:
+#'     - `tydat`: Matrix of total detections.
+#'     - `tydatdelta`: Matrix of detections considering sensitivity.
+#'     - `tydatlambda`: Matrix of detections considering specificity.
+#'     - `tydatdeltalambda`: Matrix of detections considering both sensitivity and specificity.
+#'   - If `type = "group"`:
+#'     - `tydat`: Matrix of total detections.
+#'     - `tydatDelta`: Matrix of detections considering sensitivity.
+#'     - `tydatLambda`: Matrix of detections considering specificity.
+#'     - `tydatDeltaLambda`: Matrix of detections considering both sensitivity and specificity.
+#'
+#' @examples
+#' simGroupedBN(N = 1000, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, NoSim = 100, type = "item")
+#'
+#' @export
+simGroupedBN <- function(N,            # Population size
+                         barN,           # Group size
+                         Tx,            # Number of infectives in the population
+                         b,              # Number of group samples
+                         delta,        # Sensitivity (0 to 1, =1 removes sensitivity issues)
+                         lambda,        # Specificity (0 to 1, =1 removes specificity issues)
+                         NoSim,     # Number of simulations
+                         type=c("item","group")) {
+
+  tydat <- matrix(0, nrow = NoSim, ncol = b + 2)
+  if(type=="item"){
+    tydatdelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatlambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatdeltalambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  } else {
+    tydatDelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatDeltaLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  }
+
+  set.seed(123456)
+
+
+  for (j in 1:NoSim) {
+    if(type=="item"){
+      ty <- tydelta <- tylambda <- tydeltalambda <- 0 } else {
+        ty <- tyDelta <- tyLambda <- tyDeltaLambda <- 0
+      }
+
+    # sX <- 0
+
+    for (i in 1:b) {
+
+      # Hypergeometric sampling for the number of infectives in the current group
+      # getX <- rhyper(1, Tx - sX, N - Tx - sX, barN)
+      # sX <- sX + getX
+
+      # Binomial sampling for the number of infectives in the current group
+      getX <- rbinom(1, size = barN, prob = Tx / N)
+
+      # Sensitivity-based detection
+      Y <- rbinom(getX, 1, delta)
+      # Specificity-based detection
+      Z <- rbinom(barN - getX, 1, 1 - lambda)
+
+
+      # Total detection
+      getY <- sum(Y)
+      getZ <- sum(Z)
+      getYZ <- getY + getZ
+
+      if (getX > 0) ty <- ty + 1
+
+      if(type=="item"){
+        # Update counts for various detection cases
+        if (getY > 0) tydelta <- tydelta + 1
+        if (getZ > 0) tylambda <- tylambda + 1
+        if (getYZ > 0) tydeltalambda <- tydeltalambda + 1
+      } else {
+        # Delta and Lambda detections
+        Dv <- rbinom(1, 1, delta)
+        Gv <- rbinom(1, 1, lambda)
+
+        if (getX > 0 && Dv > 0) tyDelta <- tyDelta + 1
+        if (getX == 0 && Gv == 0) tyLambda <- tyLambda + 1
+        if ((getX > 0 && Dv > 0) || (getX == 0 && Gv == 0)) tyDeltaLambda <- tyDeltaLambda + 1
+
+      }
+
+      # Store results
+      tydat[j, b + 2] <- ty
+
+      if(type=="item"){
+
+        tydatdelta[j, b + 2] <- tydelta
+        tydatlambda[j, b + 2] <- tylambda
+        tydatdeltalambda[j, b + 2] <- tydeltalambda } else {
+          tydatDelta[j, b + 2] <- tyDelta
+          tydatLambda[j, b + 2] <- tyLambda
+          tydatDeltaLambda[j, b + 2] <- tyDeltaLambda
+        }
+
+    }
+
+    for (i in 1:(b + 1)) {
+
+      if (ty == (i - 1)) tydat[j, i] <- 1
+
+      if(type=="item"){
+        if (tydelta == (i - 1)) tydatdelta[j, i] <- 1
+        if (tylambda == (i - 1)) tydatlambda[j, i] <- 1
+        if (tydeltalambda == (i - 1)) tydatdeltalambda[j, i] <- 1}else {
+
+          if (tyDelta == (i - 1)) tydatDelta[j, i] <- 1
+          if (tyLambda == (i - 1)) tydatLambda[j, i] <- 1
+          if (tyDeltaLambda == (i - 1)) tydatDeltaLambda[j, i] <- 1 }
+
+    }
+  }
+
+  if(type=="item"){
+    list(tydat=tydat,tydatdelta=tydatdelta,tydatlambda=tydatlambda,tydatdeltalambda=tydatdeltalambda)} else {
+      list(tydat=tydat,tydatDelta=tydatDelta,tydatLambda=tydatLambda,tydatDeltaLambda=tydatDeltaLambda)}
+
 }
