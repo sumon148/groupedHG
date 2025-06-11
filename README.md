@@ -6,7 +6,7 @@ for grouped hypergeometric distribution considering adjustment for
 sensitivity and specificity of the test. The sensitivity and specificity
 can be considered at the item and group level. In addition to this,
 Fisher Information (FI) of the total number of contaminated items in the
-population (denoted as $T_x$) can be calculated using two alternative
+population (denoted as $`T_x`$) can be calculated using two alternative
 methods - analytic derivative (AD) and PMF-based. The PMF-based FI
 calculation is based on the Sánchez-Moreno, Yánez and Dehesa (2009)
 work.
@@ -22,11 +22,11 @@ devtools::install_github("sumon148/groupedHG")
 
 ## Example
 
-Let assume a population containing $N$ items of which $Tx$ are
-contaminated. We can calculate PMF of having $ty$ contaminated groups of
-size $barN$ after inspecting a sample of $b$ groups as below assuming
-group-level imperfect sensitivity ($\Delta=0.7$) and specificity
-($\Lambda=0.8$).
+Let assume a population containing $`N`$ items of which $`Tx`$ are
+contaminated. We can calculate PMF of having $`ty`$ contaminated groups
+of size $`barN`$ after inspecting a sample of $`b`$ groups as below
+assuming group-level imperfect sensitivity ($`\Delta=0.7`$) and
+specificity ($`\Lambda=0.8`$).
 
 ``` r
 library(groupedHG)
@@ -56,27 +56,18 @@ of contaminated groups can be obtained as below:
 ExpVarHG.imperfect.item <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=0.70, lambda=0.8,type="item")
 ExpVarHG.imperfect.item$expectation
 #> [1] 3.044377
-```
-
-``` r
 ExpVarHG.imperfect.item$variance
 #> [1] 0.7180313
-```
-
-``` r
 
 ExpVarHG.perfect.group <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=1, lambda=1,type="group")
 ExpVarHG.perfect.group$expectation
 #> [1] 2.386647
-```
-
-``` r
 ExpVarHG.perfect.group$variance
 #> [1] 0.8797255
 ```
 
 The Fisher Information for the number of contaminated items in the
-population $T_x$ can be calculated as below assuming group and item
+population $`T_x`$ can be calculated as below assuming group and item
 level imperfect sensitivity and specificity:
 
 ``` r
