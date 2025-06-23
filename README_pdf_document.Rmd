@@ -1,5 +1,8 @@
 ---
-output: github_document
+output:
+  pdf_document:
+    keep_tex: true
+  html_document: default
 ---
 
 ```{r, include = FALSE}
@@ -7,7 +10,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,             # collapse code + output for GitHub style
   comment = "#>",              # GitHub uses #> for output comments
   fig.path = "man/figures/README-",  # path prefix for figures in README
-  out.width = "100%"          # make figures full width on GitHub
+  out.width = "100%",          # make figures full width on GitHub
+  tidy = TRUE,                 # tidy up long code lines
+  tidy.opts = list(width.cutoff = 60),  # wrap lines nicely
+  fig.width = 6,
+  fig.height = 4,
+  fig.retina = 2
 )
 ```
 

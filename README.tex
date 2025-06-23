@@ -111,7 +111,7 @@
 
 \section{groupedHG}\label{groupedhg}
 
-The goal of \texttt{groupedHG} is to estimate probability mass function
+The goal of \textbf{groupedHG} is to estimate probability mass function
 (PMF) for grouped hypergeometric distribution considering adjustment for
 sensitivity and specificity of the test. The sensitivity and specificity
 can be considered at the item and group level. In addition to this,
@@ -134,47 +134,39 @@ You can install the development version of \texttt{groupedHG} like so:
 
 \subsection{Example}\label{example}
 
-Let assume a population containing \(`N`\) items of which \(`Tx`\) are
-contaminated. We can calculate PMF of having \(`ty`\) contaminated
-groups of size \(`barN`\) after inspecting a sample of \(`b`\) groups as
-below assuming group-level imperfect sensitivity (\(`\Delta=0.7`\)) and
-specificity (\(`\Lambda=0.8`\)).
+Let assume a population containing \(N\) items of which \(Tx\) are
+contaminated. We can calculate PMF of having \(ty\) contaminated groups
+of size \(barN\) after inspecting a sample of \(b\) groups as below
+assuming group-level imperfect sensitivity (\(\Delta=0.7\)) and
+specificity (\(\Lambda=0.8\)).
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(groupedHG)}
-\NormalTok{b}\OtherTok{=}\DecValTok{4}
+\NormalTok{b }\OtherTok{=} \DecValTok{4}
 \NormalTok{ty.values }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\NormalTok{b)}
-\NormalTok{PRty.HG.group }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}
-\NormalTok{ty.values,}
-\ControlFlowTok{function}\NormalTok{(ty) }\FunctionTok{pmfHG.imperfect.group}\NormalTok{(}
-\NormalTok{ty, }\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }\AttributeTok{Tx=}\DecValTok{20}\NormalTok{, }\AttributeTok{b=}\NormalTok{b, }
-\AttributeTok{delta=}\FloatTok{0.7}\NormalTok{, }\AttributeTok{lambda=}\FloatTok{0.8}\NormalTok{,}\AttributeTok{verbose =} \ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{)}
-
-\FunctionTok{plot}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\NormalTok{b, PRty.HG.group, }
-  \AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }
-  \AttributeTok{xlab=}\FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Number of group detections, "}\NormalTok{, t[y])),}
-     \AttributeTok{ylab =} \StringTok{"Probability mass"}\NormalTok{, }
-     \AttributeTok{main =} \StringTok{"Grouped Hypergeometric model"}\NormalTok{,}
-     \AttributeTok{lty=}\DecValTok{2}
-\NormalTok{)}
-\FunctionTok{points}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\NormalTok{b,PRty.HG.group,}\AttributeTok{type =} \StringTok{"b"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{)}
+\NormalTok{PRty.HG.group }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(ty.values, }\ControlFlowTok{function}\NormalTok{(ty) }\FunctionTok{pmfHG.imperfect.group}\NormalTok{(ty,}
+    \AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{Tx =} \DecValTok{20}\NormalTok{, }\AttributeTok{b =}\NormalTok{ b, }\AttributeTok{delta =} \FloatTok{0.7}\NormalTok{, }\AttributeTok{lambda =} \FloatTok{0.8}\NormalTok{,}
+    \AttributeTok{verbose =} \ConstantTok{FALSE}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\NormalTok{b, PRty.HG.group, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{xlab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Number of group detections, "}\NormalTok{,}
+\NormalTok{    t[y])), }\AttributeTok{ylab =} \StringTok{"Probability mass"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Grouped Hypergeometric model"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\NormalTok{b, PRty.HG.group, }\AttributeTok{type =} \StringTok{"b"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\includegraphics[width=1\linewidth]{man/figures/README-PMF HG Group-1}
 
 In the similar way, the PMF can be calculated assuming item-level
 imperfect test as below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{PRty.HG.item }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}
-\NormalTok{ty.values, }
-\ControlFlowTok{function}\NormalTok{(ty) }\FunctionTok{pmfHG.imperfect.item}\NormalTok{(}
-\NormalTok{ty, }\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }\AttributeTok{Tx=}\DecValTok{20}\NormalTok{, }\AttributeTok{b=}\NormalTok{b, }
-\AttributeTok{delta=}\FloatTok{0.7}\NormalTok{, }\AttributeTok{lambda=}\FloatTok{0.8}\NormalTok{,}\AttributeTok{verbose =}\ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{)}
+\NormalTok{PRty.HG.item }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(ty.values, }\ControlFlowTok{function}\NormalTok{(ty) }\FunctionTok{pmfHG.imperfect.item}\NormalTok{(ty,}
+    \AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{Tx =} \DecValTok{20}\NormalTok{, }\AttributeTok{b =}\NormalTok{ b, }\AttributeTok{delta =} \FloatTok{0.7}\NormalTok{, }\AttributeTok{lambda =} \FloatTok{0.8}\NormalTok{,}
+    \AttributeTok{verbose =} \ConstantTok{FALSE}\NormalTok{))}
 \NormalTok{PRty.HG.item}
+\CommentTok{\#\textgreater{} [1] 0.002993711 0.040346066 0.198811210 0.424987223 0.332861789}
 \end{Highlighting}
 \end{Shaded}
 
@@ -183,53 +175,49 @@ of contaminated groups can be obtained as below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{ExpVarHG.imperfect.item }\OtherTok{\textless{}{-}} \FunctionTok{ExpVarHG.imperfect}\NormalTok{(}
-\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{Tx=}\DecValTok{20}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }\AttributeTok{b=}\DecValTok{4}\NormalTok{, }
-\AttributeTok{delta=}\FloatTok{0.70}\NormalTok{, }\AttributeTok{lambda=}\FloatTok{0.8}\NormalTok{,}\AttributeTok{type=}\StringTok{"item"}
-\NormalTok{)}
+\NormalTok{ExpVarHG.imperfect.item }\OtherTok{\textless{}{-}} \FunctionTok{ExpVarHG.imperfect}\NormalTok{(}\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{Tx =} \DecValTok{20}\NormalTok{,}
+    \AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{b =} \DecValTok{4}\NormalTok{, }\AttributeTok{delta =} \FloatTok{0.7}\NormalTok{, }\AttributeTok{lambda =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{type =} \StringTok{"item"}\NormalTok{)}
 \NormalTok{ExpVarHG.imperfect.item}\SpecialCharTok{$}\NormalTok{expectation}
+\CommentTok{\#\textgreater{} [1] 3.044377}
 \NormalTok{ExpVarHG.imperfect.item}\SpecialCharTok{$}\NormalTok{variance}
+\CommentTok{\#\textgreater{} [1] 0.7180313}
 
-\NormalTok{ExpVarHG.perfect.group }\OtherTok{\textless{}{-}} \FunctionTok{ExpVarHG.imperfect}\NormalTok{(}
-\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{Tx=}\DecValTok{20}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }\AttributeTok{b=}\DecValTok{4}\NormalTok{, }
-\AttributeTok{delta=}\DecValTok{1}\NormalTok{, }\AttributeTok{lambda=}\DecValTok{1}\NormalTok{,}\AttributeTok{type=}\StringTok{"group"}
-\NormalTok{)}
+\NormalTok{ExpVarHG.perfect.group }\OtherTok{\textless{}{-}} \FunctionTok{ExpVarHG.imperfect}\NormalTok{(}\AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{Tx =} \DecValTok{20}\NormalTok{,}
+    \AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{b =} \DecValTok{4}\NormalTok{, }\AttributeTok{delta =} \DecValTok{1}\NormalTok{, }\AttributeTok{lambda =} \DecValTok{1}\NormalTok{, }\AttributeTok{type =} \StringTok{"group"}\NormalTok{)}
 \NormalTok{ExpVarHG.perfect.group}\SpecialCharTok{$}\NormalTok{expectation}
+\CommentTok{\#\textgreater{} [1] 2.386647}
 \NormalTok{ExpVarHG.perfect.group}\SpecialCharTok{$}\NormalTok{variance}
+\CommentTok{\#\textgreater{} [1] 0.8797255}
 \end{Highlighting}
 \end{Shaded}
 
 The Fisher Information for the number of contaminated items in the
-population \(`T_x`\) can be calculated as below assuming group and item
+population \(T_x\) can be calculated as below assuming group and item
 level imperfect sensitivity and specificity:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{Tx\_values }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\DecValTok{80}\NormalTok{)}
 \CommentTok{\# Different cases: Item level sensitivity}
-\NormalTok{FI\_case1\_AD\_Based\_group }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}
-\NormalTok{Tx\_values, }\ControlFlowTok{function}\NormalTok{(Tx) }\FunctionTok{FIpmfHG.Tx.imperfect}\NormalTok{(}
-\NormalTok{Tx, }\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{b=}\DecValTok{4}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }
-\AttributeTok{delta=}\FloatTok{1.0}\NormalTok{, }\AttributeTok{lambda=}\FloatTok{1.0}\NormalTok{, }
-\AttributeTok{method =} \StringTok{"AD"}\NormalTok{, }\AttributeTok{type =} \StringTok{"group"}\NormalTok{,}
-\AttributeTok{verbose=}\ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{)}
-\NormalTok{FI\_case1\_AD\_Based\_Item }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}
-\NormalTok{Tx\_values, }\ControlFlowTok{function}\NormalTok{(Tx) }\FunctionTok{FIpmfHG.Tx.imperfect}\NormalTok{(}
-\NormalTok{Tx, }\AttributeTok{N=}\DecValTok{100}\NormalTok{, }\AttributeTok{b=}\DecValTok{4}\NormalTok{, }\AttributeTok{barN=}\DecValTok{4}\NormalTok{, }
-\AttributeTok{delta=}\FloatTok{1.0}\NormalTok{, }\AttributeTok{lambda=}\FloatTok{1.0}\NormalTok{, }
-\AttributeTok{method =} \StringTok{"AD"}\NormalTok{, }\AttributeTok{type =} \StringTok{"item"}\NormalTok{,}\AttributeTok{verbose=}\ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{)}
-\FunctionTok{plot}\NormalTok{(Tx\_values, FI\_case1\_AD\_Based\_group, }
-\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }
-\AttributeTok{xlab=}\FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Number of Contaminated Items, "}\NormalTok{, T[x])),}
-\AttributeTok{ylab =} \StringTok{"Fisher Information: Hypergeometric"}\NormalTok{, }
-\AttributeTok{main =} \StringTok{"FI under HG: Group and item level imperfect test"}\NormalTok{,}\AttributeTok{lty=}\DecValTok{2}
-\NormalTok{)}
-\FunctionTok{lines}\NormalTok{(Tx\_values,FI\_case1\_AD\_Based\_Item,}\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{)}
-\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{,}\AttributeTok{legend=}\FunctionTok{c}\NormalTok{(}\StringTok{"Group"}\NormalTok{,}\StringTok{"Item"}\NormalTok{),}\AttributeTok{col=}\FunctionTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{"blue"}\NormalTok{),}\AttributeTok{lty=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{),}\AttributeTok{bty =} \StringTok{"n"}\NormalTok{)}
+\NormalTok{FI\_case1\_AD\_Based\_group }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(Tx\_values, }\ControlFlowTok{function}\NormalTok{(Tx) }\FunctionTok{FIpmfHG.Tx.imperfect}\NormalTok{(Tx,}
+    \AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{b =} \DecValTok{4}\NormalTok{, }\AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{delta =} \DecValTok{1}\NormalTok{, }\AttributeTok{lambda =} \DecValTok{1}\NormalTok{, }\AttributeTok{method =} \StringTok{"AD"}\NormalTok{,}
+    \AttributeTok{type =} \StringTok{"group"}\NormalTok{, }\AttributeTok{verbose =} \ConstantTok{FALSE}\NormalTok{))}
+\NormalTok{FI\_case1\_AD\_Based\_Item }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(Tx\_values, }\ControlFlowTok{function}\NormalTok{(Tx) }\FunctionTok{FIpmfHG.Tx.imperfect}\NormalTok{(Tx,}
+    \AttributeTok{N =} \DecValTok{100}\NormalTok{, }\AttributeTok{b =} \DecValTok{4}\NormalTok{, }\AttributeTok{barN =} \DecValTok{4}\NormalTok{, }\AttributeTok{delta =} \DecValTok{1}\NormalTok{, }\AttributeTok{lambda =} \DecValTok{1}\NormalTok{, }\AttributeTok{method =} \StringTok{"AD"}\NormalTok{,}
+    \AttributeTok{type =} \StringTok{"item"}\NormalTok{, }\AttributeTok{verbose =} \ConstantTok{FALSE}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(Tx\_values, FI\_case1\_AD\_Based\_group, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{col =} \StringTok{"black"}\NormalTok{,}
+    \AttributeTok{xlab =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Number of Contaminated Items, "}\NormalTok{,}
+\NormalTok{        T[x])), }\AttributeTok{ylab =} \StringTok{"Fisher Information: Hypergeometric"}\NormalTok{,}
+    \AttributeTok{main =} \StringTok{"FI under HG: Group and item level imperfect test"}\NormalTok{,}
+    \AttributeTok{lty =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{lines}\NormalTok{(Tx\_values, FI\_case1\_AD\_Based\_Item, }\AttributeTok{type =} \StringTok{"l"}\NormalTok{, }\AttributeTok{lty =} \DecValTok{2}\NormalTok{,}
+    \AttributeTok{col =} \StringTok{"blue"}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }\AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"Group"}\NormalTok{, }\StringTok{"Item"}\NormalTok{), }\AttributeTok{col =} \FunctionTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}
+    \StringTok{"blue"}\NormalTok{), }\AttributeTok{lty =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{), }\AttributeTok{bty =} \StringTok{"n"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\includegraphics[width=1\linewidth]{man/figures/README-FI Item-1}
 
 \subsection{Reference}\label{reference}
 

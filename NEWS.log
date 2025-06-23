@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.6.13)  23 JUN 2025 13:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.6.13)  23 JUN 2025 13:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **"C:/Users/u1107832/OneDrive - Australian National University/R Package Develo
-pment/groupedHG/README.tex"
+pment/groupedHG/NEWS.tex"
 
 (C:/Users/u1107832/OneDrive - Australian National University/R Package Developm
-ent/groupedHG/README.tex
+ent/groupedHG/NEWS.tex
 LaTeX2e <2025-06-01>
 L3 programming layer <2025-05-26>
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -253,23 +253,6 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cf
 g))
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/fancyvrb\fancyvrb.st
-y
-Package: fancyvrb 2024/01/20 4.5c verbatim text (tvz,hv)
-\FV@CodeLineNo=\count301
-\FV@InFile=\read2
-\FV@TabBox=\box56
-\c@FancyVerbLine=\count302
-\FV@StepNumber=\count303
-\FV@OutFile=\write3
-) (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/framed\framed.sty
-Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
-\OuterFrameSep=\skip55
-\fb@frw=\dimen167
-\fb@frh=\dimen168
-\FrameRule=\dimen169
-\FrameSep=\dimen170
-)
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.st
 y
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
@@ -286,8 +269,8 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
 )
-\Gin@req@height=\dimen171
-\Gin@req@width=\dimen172
+\Gin@req@height=\dimen167
+\Gin@req@width=\dimen168
 )
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/bookmark\bookmark.st
 y
@@ -332,16 +315,16 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 titlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count304
+\c@section@level=\count301
 )
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringen
 c.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen173
-\Hy@linkcounter=\count305
-\Hy@pagecounter=\count306
+\@linkdim=\dimen169
+\Hy@linkcounter=\count302
+\Hy@pagecounter=\count303
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2025-05-20 v7.01m Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -351,7 +334,7 @@ Now handling font encoding PD1 ...
 y
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count307
+\Hy@SavedSpaceFactor=\count304
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2025-05-20 v7.01m Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
@@ -365,13 +348,13 @@ Package hyperref Info: Plain pages OFF on input line 4172.
 Package hyperref Info: Backreferencing OFF on input line 4177.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4424.
-\c@Hy@tempcnt=\count308
+\c@Hy@tempcnt=\count305
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4763.
-\XeTeXLinkMargin=\dimen174
+\XeTeXLinkMargin=\dimen170
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 
@@ -380,9 +363,9 @@ alc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count309
-\Field@Width=\dimen175
-\Fld@charsize=\dimen176
+\Fld@menulength=\count306
+\Field@Width=\dimen171
+\Fld@charsize=\dimen172
 Package hyperref Info: Hyper figures OFF on input line 6042.
 Package hyperref Info: Link nesting OFF on input line 6047.
 Package hyperref Info: Hyper index ON on input line 6050.
@@ -396,16 +379,16 @@ y
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count310
-\c@Item=\count311
-\c@Hfootnote=\count312
+\Hy@abspage=\count307
+\c@Item=\count308
+\c@Hfootnote=\count309
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
 File: hpdftex.def 2025-05-20 v7.01m Hyperref driver for pdfTeX
-\Fld@listcount=\count313
-\c@bookmark@seq@number=\count314
+\Fld@listcount=\count310
+\c@bookmark@seq@number=\count311
 
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerun
 filecheck.sty
@@ -424,53 +407,53 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 85.
 )
-\Hy@SectionHShift=\skip56
+\Hy@SectionHShift=\skip55
 )
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/bookmark\bkm-pdftex.
 def
 File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO
 )
-\BKM@id=\count315
+\BKM@id=\count312
 )) (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/xurl\xurl.sty
 Package: xurl 2022/01/09 v 0.10 modify URL breaks
 )
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 11
-0.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 70
+.
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-
 pdftex.def
 File: l3backend-pdftex.def 2025-04-14 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count316
-) (README.aux)
-\openout1 = `README.aux'.
+\l__color_backend_stack_int=\count313
+) (NEWS.aux)
+\openout1 = `NEWS.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 110.
-LaTeX Font Info:    ... okay on input line 110.
-LaTeX Info: Redefining \microtypecontext on input line 110.
-Package microtype Info: Applying patch `item' on input line 110.
-Package microtype Info: Applying patch `toc' on input line 110.
-Package microtype Info: Applying patch `eqnum' on input line 110.
-Package microtype Info: Applying patch `footnote' on input line 110.
-Package microtype Info: Applying patch `verbatim' on input line 110.
-LaTeX Info: Redefining \microtypesetup on input line 110.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Info: Redefining \microtypecontext on input line 70.
+Package microtype Info: Applying patch `item' on input line 70.
+Package microtype Info: Applying patch `toc' on input line 70.
+Package microtype Info: Applying patch `eqnum' on input line 70.
+Package microtype Info: Applying patch `footnote' on input line 70.
+Package microtype Info: Applying patch `verbatim' on input line 70.
+LaTeX Info: Redefining \microtypesetup on input line 70.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -481,7 +464,7 @@ Package microtype Info: Using default expansion set `alltext-nott'.
 LaTeX Warning: Command \showhyphens   has changed.
                Check if current package is valid.
 
-LaTeX Info: Redefining \showhyphens on input line 110.
+LaTeX Info: Redefining \showhyphens on input line 70.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -493,16 +476,16 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf
 .mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count317
-\scratchdimen=\dimen177
-\scratchbox=\box57
-\nofMPsegments=\count318
-\nofMParguments=\count319
+\scratchcounter=\count314
+\scratchdimen=\dimen173
+\scratchbox=\box56
+\nofMPsegments=\count315
+\nofMParguments=\count316
 \everyMPshowfont=\toks28
-\MPscratchCnt=\count320
-\MPscratchDim=\dimen178
-\MPnumerator=\count321
-\makeMPintoPDFobject=\count322
+\MPscratchCnt=\count317
+\MPscratchDim=\dimen174
+\MPnumerator=\count318
+\makeMPintoPDFobject=\count319
 \everyMPtoPDFconversion=\toks29
 )
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopd
@@ -549,106 +532,44 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 110.
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-19.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
-File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+Package hyperref Info: Link coloring OFF on input line 70.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 7
+6.
+(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-19.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
-File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-119.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
-File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-119.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
-File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 119.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 119.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 119.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 119
-.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
-File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 119
-.
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-(C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg
-File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-)
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-26.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
+4.
 (C:\Users\u1107832\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 130.
-<man/figures/README-PMF HG Group-1.pdf, id=3, 433.62pt x 289.08pt>
-File: man/figures/README-PMF HG Group-1.pdf Graphic file (type pdf)
-<use man/figures/README-PMF HG Group-1.pdf>
-Package pdftex.def Info: man/figures/README-PMF HG Group-1.pdf  used on input l
-ine 158.
-(pdftex.def)             Requested size: 433.63878pt x 289.09251pt.
-
 
 [1
 
 {C:/Users/u1107832/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/u
 1107832/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Users/u1
-107832/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Users
-/u1107832/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}]
-
-[2 <./man/figures/README-PMF HG Group-1.pdf>]
-<man/figures/README-FI Item-1.pdf, id=31, 433.62pt x 289.08pt>
-File: man/figures/README-FI Item-1.pdf Graphic file (type pdf)
-<use man/figures/README-FI Item-1.pdf>
-Package pdftex.def Info: man/figures/README-FI Item-1.pdf  used on input line 2
-20.
-(pdftex.def)             Requested size: 433.63878pt x 289.09251pt.
-
-
-[3 <./man/figures/README-FI Item-1.pdf>] (README.aux)
+107832/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}] (NEWS.aux)
  ***********
 LaTeX2e <2025-06-01>
 L3 programming layer <2025-05-26>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 13875 strings out of 468224
- 220541 string characters out of 5431500
- 665396 words of memory out of 5000000
- 42149 multiletter control sequences out of 15000+600000
- 660666 words of font info for 88 fonts, out of 8000000 for 9000
+ 13181 strings out of 468224
+ 208250 string characters out of 5431500
+ 657147 words of memory out of 5000000
+ 41531 multiletter control sequences out of 15000+600000
+ 641114 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 83i,6n,93p,1097b,490s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,5n,93p,1095b,452s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10
 .pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmb
 x12.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/
-lmmi10.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/public/
-lm/lmmi7.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/publi
-c/lm/lmr10.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/lm/lmtk10.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/lm/lmtt10.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/typ
-e1/public/lm/lmtti10.pfb>
-Output written on README.pdf (3 pages, 193302 bytes).
+lmr10.pfb><C:/Users/u1107832/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
+m/lmtt10.pfb>
+Output written on NEWS.pdf (1 page, 106442 bytes).
 PDF statistics:
- 98 PDF objects out of 1000 (max. 8388607)
- 8 named destinations out of 1000 (max. 500000)
- 18475 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 41 PDF objects out of 1000 (max. 8388607)
+ 3 named destinations out of 1000 (max. 500000)
+ 10249 words of extra memory for PDF output out of 12000 (max. 10000000)
 
