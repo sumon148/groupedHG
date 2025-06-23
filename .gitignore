@@ -5,5 +5,5 @@
 .DS_Store
 .quarto
 .RData
-man/
+#man/
 vignettes/
