@@ -616,3 +616,138 @@ ExpVarBN.imperfect <- function(N, Tx, barN, b, delta, lambda, type = c("group", 
     variance = ExpVarHG$variance
   ))
 }
+
+#' Simulate Grouped Binomial Sampling with Sensitivity and Specificity Adjustments
+#'
+#' This function simulates a grouped binomial sampling process, accounting for imperfect sensitivity and specificity in detection.
+#'
+#' @param N Integer. The total population size.
+#' @param barN Integer. The group size.
+#' @param Tx Integer. The number of infectives in the population.
+#' @param b Integer. The number of group samples.
+#' @param delta Numeric (0 to 1). Sensitivity of detection (delta = 1 removes sensitivity issues).
+#' @param lambda Numeric (0 to 1). Specificity of detection (lambda = 1 removes specificity issues).
+#' @param NoSim Integer. The number of simulation iterations.
+#' @param type Character. Either `"item"` or `"group"`, specifying the detection model.
+#'
+#' @return A list containing simulation results:
+#'   - If `type = "item"`:
+#'     - `tydat`: Matrix of total detections.
+#'     - `tydatdelta`: Matrix of detections considering sensitivity.
+#'     - `tydatlambda`: Matrix of detections considering specificity.
+#'     - `tydatdeltalambda`: Matrix of detections considering both sensitivity and specificity.
+#'   - If `type = "group"`:
+#'     - `tydat`: Matrix of total detections.
+#'     - `tydatDelta`: Matrix of detections considering sensitivity.
+#'     - `tydatLambda`: Matrix of detections considering specificity.
+#'     - `tydatDeltaLambda`: Matrix of detections considering both sensitivity and specificity.
+#'
+#' @examples
+#' simGroupedBN(N = 1000, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, NoSim = 100, type = "item")
+#'
+#' @export
+simGroupedBN <- function(N,            # Population size
+                         barN,           # Group size
+                         Tx,            # Number of infectives in the population
+                         b,              # Number of group samples
+                         delta,        # Sensitivity (0 to 1, =1 removes sensitivity issues)
+                         lambda,        # Specificity (0 to 1, =1 removes specificity issues)
+                         NoSim,     # Number of simulations
+                         type=c("item","group")) {
+
+  tydat <- matrix(0, nrow = NoSim, ncol = b + 2)
+  if(type=="item"){
+    tydatdelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatlambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatdeltalambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  } else {
+    tydatDelta <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+    tydatDeltaLambda <- matrix(0, nrow = NoSim, ncol = b + 2)
+  }
+
+  set.seed(123456)
+
+
+  for (j in 1:NoSim) {
+    if(type=="item"){
+      ty <- tydelta <- tylambda <- tydeltalambda <- 0 } else {
+        ty <- tyDelta <- tyLambda <- tyDeltaLambda <- 0
+      }
+
+    # sX <- 0
+
+    for (i in 1:b) {
+
+      # Hypergeometric sampling for the number of infectives in the current group
+      # getX <- rhyper(1, Tx - sX, N - Tx - sX, barN)
+      # sX <- sX + getX
+
+      # Binomial sampling for the number of infectives in the current group
+      getX <- rbinom(1, size = barN, prob = Tx / N)
+
+      # Sensitivity-based detection
+      Y <- rbinom(getX, 1, delta)
+      # Specificity-based detection
+      Z <- rbinom(barN - getX, 1, 1 - lambda)
+
+
+      # Total detection
+      getY <- sum(Y)
+      getZ <- sum(Z)
+      getYZ <- getY + getZ
+
+      if (getX > 0) ty <- ty + 1
+
+      if(type=="item"){
+        # Update counts for various detection cases
+        if (getY > 0) tydelta <- tydelta + 1
+        if (getZ > 0) tylambda <- tylambda + 1
+        if (getYZ > 0) tydeltalambda <- tydeltalambda + 1
+      } else {
+        # Delta and Lambda detections
+        Dv <- rbinom(1, 1, delta)
+        Gv <- rbinom(1, 1, lambda)
+
+        if (getX > 0 && Dv > 0) tyDelta <- tyDelta + 1
+        if (getX == 0 && Gv == 0) tyLambda <- tyLambda + 1
+        if ((getX > 0 && Dv > 0) || (getX == 0 && Gv == 0)) tyDeltaLambda <- tyDeltaLambda + 1
+
+      }
+
+      # Store results
+      tydat[j, b + 2] <- ty
+
+      if(type=="item"){
+
+        tydatdelta[j, b + 2] <- tydelta
+        tydatlambda[j, b + 2] <- tylambda
+        tydatdeltalambda[j, b + 2] <- tydeltalambda } else {
+          tydatDelta[j, b + 2] <- tyDelta
+          tydatLambda[j, b + 2] <- tyLambda
+          tydatDeltaLambda[j, b + 2] <- tyDeltaLambda
+        }
+
+    }
+
+    for (i in 1:(b + 1)) {
+
+      if (ty == (i - 1)) tydat[j, i] <- 1
+
+      if(type=="item"){
+        if (tydelta == (i - 1)) tydatdelta[j, i] <- 1
+        if (tylambda == (i - 1)) tydatlambda[j, i] <- 1
+        if (tydeltalambda == (i - 1)) tydatdeltalambda[j, i] <- 1}else {
+
+          if (tyDelta == (i - 1)) tydatDelta[j, i] <- 1
+          if (tyLambda == (i - 1)) tydatLambda[j, i] <- 1
+          if (tyDeltaLambda == (i - 1)) tydatDeltaLambda[j, i] <- 1 }
+
+    }
+  }
+
+  if(type=="item"){
+    list(tydat=tydat,tydatdelta=tydatdelta,tydatlambda=tydatlambda,tydatdeltalambda=tydatdeltalambda)} else {
+      list(tydat=tydat,tydatDelta=tydatDelta,tydatLambda=tydatLambda,tydatDeltaLambda=tydatDeltaLambda)}
+
+}
