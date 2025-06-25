@@ -74,9 +74,9 @@ safe_digamma <- function(x) {
 #' @param b Total number of groups.
 #' @return The probability mass function (PMF) value for the given parameters.
 #' @examples
-#' pmfHG.perfect(ty = 2, N = 100, barN = 4, Tx = 20, b = 4)
+#' pmf_hg_perfect(ty = 2, N = 100, barN = 4, Tx = 20, b = 4)
 #' @export
-pmfHG.perfect <- function(ty, N, barN, Tx, b) {
+pmf_hg_perfect <- function(ty, N, barN, Tx, b) {
   # Initialize the outer binomial coefficient
   outer_binomial <- choose_custom_log(b, ty)  # Binomial coefficient for selecting t_y groups
 
@@ -137,7 +137,7 @@ pmfHG.perfect <- function(ty, N, barN, Tx, b) {
 #' @export
 dpmfHG.perfect <- function(ty, N, barN, Tx, b, verbose=TRUE) {
   # Calculate the PMF for the given inputs
-  p_ty_given_Tx <- pmfHG.perfect(ty, N, barN, Tx, b)
+  p_ty_given_Tx <- pmf_hg_perfect(ty, N, barN, Tx, b)
 
   if (ty > b || ty > Tx && p_ty_given_Tx==0) {  # ty must be <= min(b, Tx) in perfect case
     return(0)
@@ -234,7 +234,7 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND","PMF-HI","P
     if (ty > b || ty > Tx) next
 
     # PMF for ty given Tx
-    P_ty <- pmfHG.perfect(ty, N, barN, Tx, b)
+    P_ty <- pmf_hg_perfect(ty, N, barN, Tx, b)
 
     # Skip terms with P(t_y | T_x) = 0 to avoid division by zero
     if (P_ty == 0) next
@@ -248,7 +248,7 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND","PMF-HI","P
 
     } else if (method == "PMF-HI") {
       # Method: PMF-based approximation (PMF) using ty=0 to b
-      P_ty_Tx_plus1 <- pmfHG.perfect(ty, N, barN, Tx + 1, b)
+      P_ty_Tx_plus1 <- pmf_hg_perfect(ty, N, barN, Tx + 1, b)
       if (P_ty_Tx_plus1 > 0) {
         FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
       }
@@ -256,7 +256,7 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND","PMF-HI","P
     } else if (method == "PMF-SM") {
 
       # Method: PMF-based approximation (PMF) using ty=0 to b-1
-      P_ty_Tx_plus1 <- pmfHG.perfect(ty, N, barN, Tx + 1, b)
+      P_ty_Tx_plus1 <- pmf_hg_perfect(ty, N, barN, Tx + 1, b)
       if (P_ty_Tx_plus1 > 0 && ty<b) {
         FI_Tx <- FI_Tx + 4 * (sqrt(P_ty_Tx_plus1) - sqrt(P_ty))^2
       } else {
@@ -266,7 +266,7 @@ FIpmfHG.Tx.perfect <- function(N, barN, Tx, b, method = c("AD", "ND","PMF-HI","P
     } else if (method == "ND") {
       # Method: Numerical Derivative (ND)
       h <- 1  # Step size for forward difference
-      P_plus <- pmfHG.perfect(ty, N, barN, Tx + h, b)
+      P_plus <- pmf_hg_perfect(ty, N, barN, Tx + h, b)
       if (P_plus > 0) {
         FI_Tx <- FI_Tx + ((P_plus - P_ty) / h)^2 / P_ty
       }
@@ -406,9 +406,9 @@ dqDLkGroup <- function(k, N, Tx, barN, delta, lambda,verbose=TRUE) {
 #' @return Numeric. The computed PMF value adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
-#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
+#' pmf_hg_group_imperfect(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
-pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
+pmf_hg_group_imperfect <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
 
   pmf <- 0 # % Initialize the probability to zero
 
@@ -479,7 +479,7 @@ pmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = T
 #' @return Numeric. The derivative of the computed PMF value w.r.t Tx adjusted for imperfect group-level sensitivity and specificity.
 #' @examples
 #' # Example usage:
-#' pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
+#' dpmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
 dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = TRUE) {
   # Derivative of PMF with respect to Tx (following Equation 26)
@@ -496,7 +496,7 @@ dpmfHG.imperfect.group <- function(ty, N, barN, Tx, b, delta, lambda, verbose = 
   # Lambda: False positive rate (probability of a true negative being falsely identified as positive)
 
   # Calculate the PMF first using the existing function
-  pmf <- pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
+  pmf <- pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta, lambda,verbose)
 
   # Use a stricter threshold to avoid calculating derivatives for zero PMF
   if (pmf > 0) {
@@ -695,9 +695,9 @@ dqdlkItem <- function(k, N, Tx, barN, delta, lambda) {
 #' @return Numeric. The computed probability mass function value.
 #' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @examples
-#' pmfHG.imperfect.item(ty = 2, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
+#' pmf_hg_item_imperfect(ty = 2, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 #' @export
-pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
+pmf_hg_item_imperfect <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
   # Function to calculate PMF (Probability Mass Function) with item-level sensitivity and specificity.
   # This corresponds to Equation 13 and computes the probability for a given number of contaminated items (ty).
 
@@ -768,7 +768,7 @@ pmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE
 #' @export
 dpmfHG.imperfect.item <- function(ty, N, barN, Tx, b, delta, lambda, verbose=TRUE) {
 
-  pmf <- pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose )
+  pmf <- pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta, lambda, verbose )
 
   if (ty > b || (ty > Tx) && (lambda == 1) || (pmf == 0 && lambda == 1)) {
     return(0)
@@ -816,9 +816,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
     if (ty > b || ty > Tx && lambda == 1) next
 
     P_ty <- if (type == "group") {
-      pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda,verbose)
+      pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta, lambda,verbose)
     } else {
-      pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda,verbose)
+      pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta, lambda,verbose)
     }
 
     if (P_ty == 0) next
@@ -835,9 +835,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 
     if (method == "PMF-HI") {
       P_ty_Tx_plus1 <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_ty_Tx_plus1 > 0 && P_ty > 0) {
@@ -847,9 +847,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 
     if (method == "PMF-SM") {
       P_ty_Tx_plus1 <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_ty_Tx_plus1 > 0 && P_ty > 0 && ty < b) {
@@ -862,9 +862,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 
     if (method == "ND") {
       P_plus <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_plus > 0 && P_ty > 0) {
@@ -893,9 +893,9 @@ FIpmfHG.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD",
 #' @param verbose Logical. If TRUE, prints conditions that are not fulfilled.
 #' @return Numeric. The calculated Fisher Information.
 #' @examples
-#' FIpmfHG.Tx.imperfect(N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
+#' info_hg_tx_imperfect(N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8, method = "AD", type = "item")
 #' @export
-FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF-HI","PMF-SM"), type = c("group", "item"), verbose = TRUE) {
+info_hg_tx_imperfect <- function(N, barN, Tx, b, delta, lambda, method = c("AD", "ND", "PMF-HI","PMF-SM"), type = c("group", "item"), verbose = TRUE) {
   FI_Tx <- 0
   method <- match.arg(method)
   type <- match.arg(type)
@@ -908,9 +908,9 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
     P_ty <- if (ty > Tx && lambda == 1) {  # Ensure P_ty = 0 when ty > Tx
       0
     } else if (type == "group") {
-      pmfHG.imperfect.group(ty, N, barN, Tx, b, delta, lambda, verbose)
+      pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta, lambda, verbose)
     } else {
-      pmfHG.imperfect.item(ty, N, barN, Tx, b, delta, lambda, verbose)
+      pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta, lambda, verbose)
     }
 
     P_ty_vector[ty + 1] <- P_ty  # Store probability
@@ -930,9 +930,9 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
 
     if (method == "PMF-HI") {
       P_ty_Tx_plus1 <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_ty_Tx_plus1 > 0 && P_ty > 0) {
@@ -942,9 +942,9 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
 
     if (method == "PMF-SM") {
       P_ty_Tx_plus1 <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_ty_Tx_plus1 > 0 && P_ty > 0 && ty < b) {
@@ -957,9 +957,9 @@ FIpmfHG.Tx.imperfect.detail <- function(N, barN, Tx, b, delta, lambda, method = 
 
     if (method == "ND") {
       P_plus <- if (type == "group") {
-        pmfHG.imperfect.group(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_group_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       } else {
-        pmfHG.imperfect.item(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
+        pmf_hg_item_imperfect(ty, N, barN, Tx + 1, b, delta, lambda, verbose)
       }
 
       if (P_plus > 0 && P_ty > 0) {

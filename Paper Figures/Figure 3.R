@@ -21,7 +21,7 @@ Tx_values <- c(9,15,51)  # Range of contaminated items
 
 
 
-# Combination of b abd barN based on the assumptions
+# Combination of b and barN based on the assumptions
 
 ws <- c()
 b_store <- c()
@@ -64,16 +64,17 @@ fisher_results_HG_PMF <- lapply(1:dim(combinations)[1], function(i) {
   delta <- combinations$delta[i]
   lambda <- 1
   # Compute Fisher Information for each Tx value
-  fisher_info <- sapply(Tx_values, function(Tx) {
-    FIpmfHG.Tx.imperfect(
+  fisher_info <- lapply(Tx_values, function(Tx) {
+    info_hg_tx_imperfect(
       N = N, barN = n, Tx = Tx, b = b_i,  # Use correct `b_i`
       delta = delta, lambda = lambda,
-      method = "PMF-HI", type = "item"
+      method = "PMF-HI", type = "item",verbose=FALSE
     )
   })
+  HI <- sapply(fisher_info, function(x) x$FI_Tx)
 
   # Store results for this barN
-  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = fisher_info)
+  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = HI)
 })
 
 HI_HG_Tx_9 <- rep(NA, dim(combinations)[1])
@@ -109,7 +110,7 @@ fisher_results_BN_PMF <- lapply(1:dim(combinations)[1], function(i) {
   lambda <- 1
   # Compute Fisher Information for each Tx value
   fisher_info <- sapply(Tx_values, function(Tx) {
-    FIpmfBN.Tx.imperfect(
+    info_bn_tx_imperfect(
       N = N, barN = n, Tx = Tx, b = b_i,  # Use correct `b_i`
       delta = delta, lambda = lambda,
       method = "PMF-HI", type = "item"

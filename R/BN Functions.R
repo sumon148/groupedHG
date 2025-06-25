@@ -17,10 +17,10 @@
 #' using binomial probabilities for detecting target individuals in a group.
 #'
 #' @examples
-#' pmfBN.perfect(ty = 3, Tx = 10, b = 5, barN = 2, N = 20)
+#' pmf_bn_perfect(ty = 3, Tx = 10, b = 5, barN = 2, N = 20)
 #'
 #' @export
-pmfBN.perfect <- function(ty, Tx, b, barN, N) {
+pmf_bn_perfect <- function(ty, Tx, b, barN, N) {
   # Function to calculate the PMF for a grouped Binomial distribution under Perfect Test (Equation 20)
   # Parameters:
   # ty: Number of groups where the target outcome is observed
@@ -60,9 +60,9 @@ pmfBN.perfect <- function(ty, Tx, b, barN, N) {
 #' @param lambda Numeric. The group-level false positive rate, which is the probability that a negative case is classified as positive.
 #' @return Numeric. The probability mass function (PMF) for the given group-level parameters.
 #' @examples
-#' pmfBN.imperfect.group(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
+#' pmf_bn_group_imperfect(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
 #' @export
-pmfBN.imperfect.group <- function(ty, Tx, b, barN, N, delta, lambda) {
+pmf_bn_group_imperfect <- function(ty, Tx, b, barN, N, delta, lambda) {
   # Function to calculate group-level PMF (Equation 21)
 
   # Parameters:
@@ -117,9 +117,9 @@ pmfBN.imperfect.group <- function(ty, Tx, b, barN, N, delta, lambda) {
 #' @param lambda Numeric. The group-level false positive rate, which is the probability that a negative case is classified as positive.
 #' @return Numeric. The probability mass function (PMF) for the given group-level parameters.
 #' @examples
-#' pmfBN.imperfect.item(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
+#' pmf_bn_item_imperfect(ty = 5, Tx = 20, b = 10, barN = 50, N = 1000, delta = 0.1, lambda = 0.05)
 #' @export
-pmfBN.imperfect.item <- function(ty, Tx, b, barN, N, delta, lambda) {
+pmf_bn_item_imperfect <- function(ty, Tx, b, barN, N, delta, lambda) {
   # Function to calculate item-level PMF using Equation (22)
   # Parameters:
   # ty: Number of groups where the target outcome is observed
@@ -368,13 +368,13 @@ FIpmfBN.Tx.imperfect.item <- function(Tx, b, barN, N,delta,lambda) {
 #'
 #' @examples
 #' # Example using PMF method for group-level model
-#' FIpmfBN.Tx.imperfect(N = 1000, barN = 50, Tx = 10, b = 5, delta = 0.1, lambda = 0.05, method = "PMF", type = "group")
+#' info_bn_tx_imperfect(N = 1000, barN = 50, Tx = 10, b = 5, delta = 0.1, lambda = 0.05, method = "PMF", type = "group")
 #'
 #' # Example using numerical derivative method for item-level model
-#' FIpmfBN.Tx.imperfect(N = 1000, barN = 50, Tx = 10, b = 5, delta = 0.1, lambda = 0.05, method = "ND", type = "item")
+#' info_bn_tx_imperfect(N = 1000, barN = 50, Tx = 10, b = 5, delta = 0.1, lambda = 0.05, method = "ND", type = "item")
 #'
 #' @export
-FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
+info_bn_tx_imperfect <- function(N, barN, Tx, b, delta, lambda,
                                  method = c("AD", "ND", "PMF-SM", "PMF-HI"),
                                  type = c("group", "item")) {
 
@@ -394,9 +394,9 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
 
       # PMF for ty
       if (type == "group") {
-        P_ty <- pmfBN.imperfect.group(ty, Tx, b, barN, N, delta, lambda)
+        P_ty <- pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta, lambda)
       } else {
-        P_ty <- pmfBN.imperfect.item(ty, Tx, b, barN, N, delta, lambda)
+        P_ty <- pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta, lambda)
       }
 
       # Skip terms with P(t_y | T_x) = 0 to avoid division by zero
@@ -408,11 +408,11 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
       if (method == "PMF-HI") {
         # PMF values for Tx and Tx + 1
         if (type == "group") {
-          P_ty_Tx_plus1 <- pmfBN.imperfect.group(ty, Tx+1, b, barN, N, delta, lambda)
-          P_ty_Tx <- pmfBN.imperfect.group(ty, Tx, b, barN, N, delta, lambda)
+          P_ty_Tx_plus1 <- pmf_bn_group_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta, lambda)
         } else {
-          P_ty_Tx_plus1 <- pmfBN.imperfect.item(ty, Tx+1, b, barN, N, delta, lambda)
-          P_ty_Tx <- pmfBN.imperfect.item(ty, Tx, b, barN, N, delta, lambda)
+          P_ty_Tx_plus1 <- pmf_bn_item_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta, lambda)
         }
 
         if (P_ty_Tx_plus1 > 0 && P_ty_Tx > 0) {  # Avoid division by zero
@@ -424,11 +424,11 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
       if (method == "PMF-SM") {
         # PMF values for Tx and Tx + 1
         if (type == "group") {
-          P_ty_Tx_plus1 <- pmfBN.imperfect.group(ty, Tx+1, b, barN, N, delta, lambda)
-          P_ty_Tx <- pmfBN.imperfect.group(ty, Tx, b, barN, N, delta, lambda)
+          P_ty_Tx_plus1 <- pmf_bn_group_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta, lambda)
         } else {
-          P_ty_Tx_plus1 <- pmfBN.imperfect.item(ty, Tx+1, b, barN, N, delta, lambda)
-          P_ty_Tx <- pmfBN.imperfect.item(ty, Tx, b, barN, N, delta, lambda)
+          P_ty_Tx_plus1 <- pmf_bn_item_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_ty_Tx <- pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta, lambda)
         }
 
         if (P_ty_Tx_plus1 > 0 && P_ty_Tx > 0 && ty < b) {  # Avoid division by zero
@@ -442,11 +442,11 @@ FIpmfBN.Tx.imperfect <- function(N, barN, Tx, b, delta, lambda,
       if (method == "ND") {
         # Forward difference for numerical derivative
         if (type == "group") {
-          P_plus <- pmfBN.imperfect.group(ty, Tx+1, b, barN, N, delta, lambda)
-          P_current <- pmfBN.imperfect.group(ty, Tx, b, barN, N, delta, lambda)
+          P_plus <- pmf_bn_group_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_current <- pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta, lambda)
         } else {
-          P_plus <- pmfBN.imperfect.item(ty, Tx+1, b, barN, N, delta, lambda)
-          P_current <- pmfBN.imperfect.item(ty, Tx, b, barN, N, delta, lambda)
+          P_plus <- pmf_bn_item_imperfect(ty, Tx+1, b, barN, N, delta, lambda)
+          P_current <- pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta, lambda)
         }
 
         if (P_plus > 0 && P_current > 0) {  # Avoid division by zero

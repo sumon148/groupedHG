@@ -14,26 +14,26 @@ ty.values <- c(0:b)
 
 # Based on Grouped-HG Model
 # Different cases: Group level sensitivity
-PRty.HG.group <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx, b, delta=1.0, lambda=1.0))
-PRtyDelta.HG <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx, b, delta=delta, lambda=1.0))
-PRtyDeltaLambda.HG <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N, barN, Tx, b, delta=delta, lambda=lambda))
+PRty.HG.group <- sapply(ty.values, function(ty) pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta=1.0, lambda=1.0))
+PRtyDelta.HG <- sapply(ty.values, function(ty) pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta=delta, lambda=1.0))
+PRtyDeltaLambda.HG <- sapply(ty.values, function(ty) pmf_hg_group_imperfect(ty, N, barN, Tx, b, delta=delta, lambda=lambda))
 
 # Different cases: Item level sensitivity
-PRty.HG.item <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx, b, delta=1.0, lambda=1.0))
-PRty.HG.item.perfect <- sapply(ty.values, function(ty) pmfHG.perfect(ty, N, barN, Tx, b))
-PRtydelta.HG <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx, b, delta=delta, lambda=1.0))
-PRtydeltalambda.HG <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N, barN, Tx, b, delta=delta, lambda=lambda))
+PRty.HG.item <- sapply(ty.values, function(ty) pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta=1.0, lambda=1.0))
+PRty.HG.item.perfect <- sapply(ty.values, function(ty) pmf_hg_perfect(ty, N, barN, Tx, b))
+PRtydelta.HG <- sapply(ty.values, function(ty) pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta=delta, lambda=1.0))
+PRtydeltalambda.HG <- sapply(ty.values, function(ty) pmf_hg_item_imperfect(ty, N, barN, Tx, b, delta=delta, lambda=lambda))
 
 # Based on Grouped-BN Model
 # Different cases: Group level sensitivity
-PRty.BN.group <- sapply(ty.values, function(ty) pmfBN.imperfect.group(ty, Tx, b, barN, N, delta=1.0, lambda=1.0))
-PRtyDelta.BN <- sapply(ty.values, function(ty) pmfBN.imperfect.group(ty, Tx, b, barN, N, delta=delta, lambda=1.0))
-PRtyDeltaLambda.BN <- sapply(ty.values, function(ty) pmfBN.imperfect.group(ty, Tx, b, barN, N, delta=delta, lambda=lambda))
+PRty.BN.group <- sapply(ty.values, function(ty) pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta=1.0, lambda=1.0))
+PRtyDelta.BN <- sapply(ty.values, function(ty) pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta=delta, lambda=1.0))
+PRtyDeltaLambda.BN <- sapply(ty.values, function(ty) pmf_bn_group_imperfect(ty, Tx, b, barN, N, delta=delta, lambda=lambda))
 
 # Different cases: Item level sensitivity
-PRty.BN.item <- sapply(ty.values, function(ty) pmfBN.imperfect.item(ty, Tx, b, barN, N, delta=1.0, lambda=1.0))
-PRtydelta.BN <- sapply(ty.values, function(ty) pmfBN.imperfect.item(ty, Tx, b, barN, N, delta=delta, lambda=1.0))
-PRtydeltalambda.BN <- sapply(ty.values, function(ty) pmfBN.imperfect.item(ty, Tx, b, barN, N, delta=delta, lambda=lambda))
+PRty.BN.item <- sapply(ty.values, function(ty) pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta=1.0, lambda=1.0))
+PRtydelta.BN <- sapply(ty.values, function(ty) pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta=delta, lambda=1.0))
+PRtydeltalambda.BN <- sapply(ty.values, function(ty) pmf_bn_item_imperfect(ty, Tx, b, barN, N, delta=delta, lambda=lambda))
 
 
 

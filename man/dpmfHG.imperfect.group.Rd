@@ -32,5 +32,5 @@ w.r.t. Tx accounting for false negative rate (\eqn{\delta}) and false positive r
 }
 \examples{
 # Example usage:
-pmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
+dpmfHG.imperfect.group(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 }

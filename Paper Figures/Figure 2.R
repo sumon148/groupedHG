@@ -35,16 +35,16 @@ fisher_results_HG_PMF <- lapply(seq_along(barN), function(i) {
   delta <- calculate_delta_ws(barN=n, ws=ws_i, rho_hat=rho_hat, C=C)  # Ensure single numeric value
   lambda <- 1
   # Compute Fisher Information for each Tx value
-  fisher_info <- sapply(Tx_values, function(Tx) {
-    FIpmfHG.Tx.imperfect(
+  fisher_info <- lapply(Tx_values, function(Tx) {
+    info_hg_tx_imperfect(
       N = N, barN = n, Tx = Tx, b = b_i,  # Use correct `b_i`
       delta = delta, lambda = lambda,
       method = "PMF-HI", type = "item"
     )
   })
-
+  HI <- sapply(fisher_info, function(x) x$FI_Tx)
   # Store results for this barN
-  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = fisher_info)
+  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = HI)
 })
 
 
