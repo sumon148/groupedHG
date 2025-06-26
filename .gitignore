@@ -6,5 +6,5 @@
 .quarto
 .RData
 #man/
-vignettes/
-inst/doc
+#vignettes/
+#inst/doc
