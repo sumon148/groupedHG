@@ -6,12 +6,12 @@ output:
   rmarkdown::html_vignette:
     fig_width: 8
     fig_height: 5
-
 vignette: >
-  %\VignetteIndexEntry{HG-Vignette}
+  %\VignetteIndexEntry{groupedHG: Hypergeometric & Binomial Group Sampling}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 
 
 ```{r, include = FALSE}
@@ -29,15 +29,23 @@ library(ggpubr)
 
 # Introduction
 
-This document introduces the **groupedHG** R package, which provides tools for designing and analyzing group (pooled) sampling under imperfect testing conditions. Below, we outline the motivation, applications, and key features of the package.
+# Introduction
 
-- **Problem statement:** Group (or pooled) sampling is a widely used technique in biological sciences and public health for efficiently detecting pest species, pathogens, or estimating disease prevalence in populations. However, most real-world testing processes—such as PCR or serological tests—are imperfect, exhibiting less-than-ideal sensitivity and specificity. These imperfections can significantly bias prevalence estimates and lead to suboptimal decision-making, especially in critical contexts such as disease outbreak response or biosecurity monitoring.
+This document introduces the **groupedHG** R package, which provides tools for designing and analyzing group (pooled) sampling under imperfect testing conditions. In many biological and public‐health settings, pooled sampling is used to detect pest species, pathogens, or estimate disease prevalence more efficiently. However, real‐world tests—such as PCR or serological assays—are seldom perfect: sensitivity often declines due to dilution in large pools, and specificity can vary with assay conditions (Arnold *et al.*, 2005). These imperfections can bias prevalence estimates and lead to suboptimal decision‐making, especially during disease outbreaks or biosecurity monitoring (Barnes *et al.*, 2025).
 
-The `groupedHG` R package addresses this challenge by providing tools for designing and analyzing grouped-hypergeometric sampling strategies that explicitly incorporate test sensitivity and specificity. It supports a variety of sampling models, including those that respond to the presence of at least one contaminated item, or that scale with the number of contaminated items in a group. The package also includes methods based on Hellinger information, enabling users to design group-sampling strategies that maximize the accuracy of prevalence inference under imperfect test performance.
+The `groupedHG` package provides an R implementation of the methods developed in Barnes *et al.* (2025), offering exact hypergeometric and fast binomial‐approximation routines that explicitly model sensitivity ($\Delta$, $\delta$) and specificity ($\Lambda$, $\lambda$) at the group or item level. It implements the sampling models—whether detecting any contaminated item or scaling with the number of contaminated items—along with Hellinger information–based tools for optimizing inference accuracy. Unlike existing R packages such as `binGroup` or `pooled`, `groupedHG` brings together the hypergeometric formulas, binomial approximations, and information‐theoretic design principles from Barnes *et al.* into a single, accessible framework.
 
-By formalizing these statistical foundations in a flexible and accessible framework, groupedHG supports researchers and public health practitioners in developing robust and efficient sampling plans tailored to real-world testing limitations.
-- **Applications:** The `groupedHG` R package supports robust group sampling designs across biosecurity, public health, and ecology by accounting for imperfect test sensitivity and specificity. It enables accurate prevalence estimation and detection from pooled samples, improving decision-making in surveillance, outbreak response, and ecological monitoring.
-- **Key features:** The `groupedHG` package provides exact hypergeometric formulas, binomial approximations, and Hellinger information-based tools to support accurate inference and optimal design of group sampling strategies under imperfect testing conditions.
+This vignette is organized as follows:
+
+1. **Mathematical Background & Notation**  
+   Definitions of $N$, $T_X$, $b$, $\bar{N}$, and the core hypergeometric/binomial formulas.  
+2. **Basic Usage & Case Study**  
+   Demonstrations of PMF and Hellinger‐information functions, including a Salmonella surveillance example in pig pens.  
+3. **Design Optimization**  
+   Grid‐search exploration of pool size ($\bar{N}$) and number of pools ($b$) via Hellinger information heatmaps.  
+4. **Session Info & References**  
+   `sessionInfo()` output and full bibliographic entries.
+
 
 # Installation
 
@@ -128,8 +136,6 @@ PRty.HG.item.perfect
 ```
 
 
-
-
 ## PMF under imperfect tests
 
 To investigate the impact of imperfect testing, we compute the PMF using both group-level and item-level sensitivity and specificity. In both cases, we assume a sensitivity of $\Delta=\delta=0.7$ and a specificity of $\Lambda=\lambda=0.8$. Upper and lower case Greek letters refer to respectively group and item level test accuracy. The function `pmf_hg_group_imperfect()` models the scenario where the test responds to the presence or absence of any contaminated item in a group (group-level accuracy), while `pmf_hg_item_imperfect()` accounts for the influence of each individual item's contamination status (item-level accuracy). As a result, the PMF distributions produced by these functions differ: group-level imperfections tend to **underestimate the number of positive groups** when contamination is sparse, while item-level imperfections may result in **greater uncertainty**, especially when multiple contaminated items exist within a group. Comparing these distributions to the perfect test case reveals how diagnostic accuracy directly influences the detection probabilities and, ultimately, prevalence inference.
@@ -142,6 +148,7 @@ delta=0.70, lambda=0.80,
 verbose = FALSE))
 PRty.HG.group.imperfect
 ```
+
 ```{r PMF HG Imperfect Item}
 PRty.HG.item.imperfect <- sapply(ty.values, 
 function(ty) pmf_hg_item_imperfect(
@@ -201,9 +208,6 @@ legend("topleft",legend=c("Group","Item"),col=c(1,2),lty=c(1,2),bty = "n")
 The differences in the probability mass function (PMF) between the exact HG model and its BN approximation can be examined below. We plotted the PMFs under both perfect and imperfect testing scenarios for both HG and BN sampling models. In the context of imperfect testing, group-level test characteristics are denoted by $D_\Delta$ (sensitivity) and $D_\Lambda$ (specificity), while item-level characteristics are denoted by $D_\delta$ and $D_\lambda$, respectively. The plot reveals that the BN approximation closely matches the exact HG model.
 
 
-
-
-
 ```{r PMF HG BN Perfect Imperfect Group Item}
 range.pmf <- range(c(PRty.HG.perfect,PRty.BN.perfect,PRty.HG.group.imperfect,PRty.HG.item.imperfect,PRty.BN.group.imperfect,PRty.BN.item.imperfect))
 plot(0:b, PRty.HG.perfect, type = "b", lty=2,  pch = 19, col = "black", xlab=expression(paste("Detected groups, ", t[y])),
@@ -230,8 +234,6 @@ legend("topleft",
 ```
 
 
-
-
 # Hellinger Information
 
 Now we work with Hellinger information, a generalized version of Fisher Information, to evaluate the amount of information available for estimating prevalence given a fixed number of contaminated items ($T_X$). This metric quantifies the sensitivity of the PMF to changes in $T_X$, and helps assess the efficiency of different group sampling designs—especially under imperfect testing conditions.
@@ -240,23 +242,47 @@ The `info_hg_tx_imperfect()` function computes Hellinger information for the gro
 
 
 ```{r HI HG Perfect Imperfect}
-Tx.values <- c(0:80)
-# Different cases: Item level sensitivity
+Tx.values <- 0:80
+
+# Safe extractor for FI_Tx
+extract_FI <- function(x) {
+  if (is.list(x) && "FI_Tx" %in% names(x)) {
+    return(x$FI_Tx)
+  } else {
+    return(0)
+  }
+}
+
+# Perfect test (delta=1, lambda=1)
 FI.HG.Perfect <- lapply(
   Tx.values, function(Tx) info_hg_tx_imperfect(
-    Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, 
-    method = "PMF-HI", type = "item",verbose = FALSE))
-FI.Tx.HG.Perfect <- sapply(FI.HG.Perfect, function(x) x$FI_Tx)
+    Tx = Tx, N = 100, b = 4, barN = 4, 
+    delta = 1.0, lambda = 1.0, 
+    method = "PMF-HI", type = "item", verbose = FALSE
+  )
+)
+FI.Tx.HG.Perfect <- sapply(FI.HG.Perfect, extract_FI)
+
+# Group-level imperfect test
 FI.HG.Group.Imperfect <- lapply(
   Tx.values, function(Tx) info_hg_tx_imperfect(
-    Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, 
-    method = "PMF-HI", type = "group",verbose = FALSE))
-FI.Tx.HG.Group.Imperfect <- sapply(FI.HG.Group.Imperfect, function(x) x$FI_Tx)
+    Tx = Tx, N = 100, b = 4, barN = 4, 
+    delta = 0.7, lambda = 0.8, 
+    method = "PMF-HI", type = "group", verbose = FALSE
+  )
+)
+FI.Tx.HG.Group.Imperfect <- sapply(FI.HG.Group.Imperfect, extract_FI)
+
+# Item-level imperfect test
 FI.HG.Item.Imperfect <- lapply(
   Tx.values, function(Tx) info_hg_tx_imperfect(
-    Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, 
-    method = "PMF-HI", type = "item",verbose = FALSE))
-FI.Tx.HG.Item.Imperfect <- sapply(FI.HG.Item.Imperfect, function(x) x$FI_Tx)
+    Tx = Tx, N = 100, b = 4, barN = 4, 
+    delta = 0.7, lambda = 0.8, 
+    method = "PMF-HI", type = "item", verbose = FALSE
+  )
+)
+FI.Tx.HG.Item.Imperfect <- sapply(FI.HG.Item.Imperfect, extract_FI)
+
 
 ```
 
@@ -422,20 +448,50 @@ plot(barN,item_level_sensitivities_case2,xlab = expression(bar(N)),ylab=expressi
 Now we can estimate HI for $T_X$ values under different item-level sensitivity.
 
 ```{r HI delta pig case}
+# Define helper safely extracting FI_Tx
+extract_FI <- function(x) {
+  if (is.list(x) && "FI_Tx" %in% names(x)) {
+    return(x$FI_Tx)
+  } else {
+    return(0)
+  }
+}
+
 fisher_results_HG_PMF <- lapply(seq_along(barN), function(i) {
-n <- barN[i]; b_i <- b[i]; ws_i <- ws[i]
-delta <- calculate_delta_ws(barN=n, ws=ws_i, rho_hat=rho_hat,C=C)
-lambda <- 1
-fisher_info <- lapply(Tx_values, function(Tx) {
+  n <- barN[i]
+  b_i <- b[i]
+  ws_i <- ws[i]
+  delta <- calculate_delta_ws(
+    barN = n,
+    ws = ws_i,
+    rho_hat = rho_hat,
+    C = C
+  )
+  lambda <- 1
+  fisher_info <- lapply(Tx_values, function(Tx) {
     info_hg_tx_imperfect(
-      N = N, barN = n, Tx = Tx, b = b_i,
-      delta = delta, lambda = lambda,
-      method = "PMF-HI", type = "item",verbose = FALSE
+      N = N,
+      barN = n,
+      Tx = Tx,
+      b = b_i,
+      delta = delta,
+      lambda = lambda,
+      method = "PMF-HI",
+      type = "item",
+      verbose = FALSE
     )
   })
-  HI <- sapply(fisher_info, function(x) x$FI_Tx)
-  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = HI)
+  HI <- sapply(fisher_info, extract_FI)
+  list(
+    barN = n,
+    b = b_i,
+    ws = ws_i,
+    delta = delta,
+    lambda = lambda,
+    HI = HI
+  )
 })
+
 
 ```
 
@@ -519,21 +575,22 @@ fisher_results_HG_PMF <- lapply(1:dim(combinations)[1], function(i) {
   lambda <- 1
   fisher_info <- lapply(Tx_values, function(Tx) {
     info_hg_tx_imperfect(
-      N = N, barN = n, Tx = Tx, b = b_i,  # Use correct `b_i`
+      N = N, barN = n, Tx = Tx, b = b_i,
       delta = delta, lambda = lambda,
-      method = "PMF-HI", type = "item",verbose=FALSE
+      method = "PMF-HI", type = "item", verbose = FALSE
     )
   })
-  HI <- sapply(fisher_info, function(x) x$FI_Tx)
-  list(barN = n, b=b_i,ws=ws_i,delta=delta,lambda=lambda,HI = HI)
+  HI <- sapply(fisher_info, extract_FI)
+  list(
+    barN = n,
+    b = b_i,
+    ws = ws_i,
+    delta = delta,
+    lambda = lambda,
+    HI = HI
+  )
 })
-HI_HG_Tx_15 <- rep(NA, dim(combinations)[1])
-for (i in 1: dim(combinations)[1]) {
-  HI_HG_Tx_15[i] <- fisher_results_HG_PMF[[i]]$HI
-}
-combinations$HI_HG_Tx_15 <- HI_HG_Tx_15
-combinations_HG_Tx_15 <- combinations[,c("b","barN","HI_HG_Tx_15")]
-head(combinations_HG_Tx_15)
+
 ```
 
 
@@ -566,6 +623,51 @@ head(combinations_BN_Tx_15)
 
 We created heatmap for both cases.
 ```{r heatmap Tx 15}
+# Recompute HI for each combination (grid search) with all assignments
+fisher_results_HG_PMF <- lapply(1:dim(combinations)[1], function(i) {
+  n <- combinations$barN[i]
+  b_i <- combinations$b[i]
+  ws_i <- combinations$ws[i]
+  delta <- combinations$delta[i]
+  lambda <- 1
+  fisher_info <- lapply(Tx_values, function(Tx) {
+    info_hg_tx_imperfect(
+      N = N,
+      barN = n,
+      Tx = Tx,
+      b = b_i,
+      delta = delta,
+      lambda = lambda,
+      method = "PMF-HI",
+      type = "item",
+      verbose = FALSE
+    )
+  })
+  HI <- sapply(fisher_info, extract_FI)
+  list(
+    barN = n,
+    b = b_i,
+    ws = ws_i,
+    delta = delta,
+    lambda = lambda,
+    HI = HI
+  )
+})
+
+# Extract HI for Tx = 15
+HI_HG_Tx_15 <- vapply(fisher_results_HG_PMF, function(res) {
+  # Defensive indexing in case HI vector shorter
+  if (length(res$HI) < 16) return(0)
+  res$HI[16]
+}, numeric(1))
+
+# Store results in combinations data frame
+combinations$HI_HG_Tx_15 <- HI_HG_Tx_15
+
+# Make table for plotting
+combinations_HG_Tx_15 <- combinations[, c("b", "barN", "HI_HG_Tx_15")]
+
+
 min_value <- min(combinations_HG_Tx_15$HI_HG_Tx_15, combinations_BN_Tx_15$HI_BN_Tx_15, na.rm = TRUE)
 max_value <- max(combinations_HG_Tx_15$HI_HG_Tx_15, combinations_BN_Tx_15$HI_BN_Tx_15, na.rm = TRUE)
 
@@ -605,7 +707,6 @@ sessionInfo()
 
 # References
 
-- Barnes, B., Mahdi, P., Das, S., & Clark, R. (2025). *Hypergeometric and Binomial Group Sampling with Sensitivity and Specificity*. Submitted to *Communications in Statistics -- Theory and Methods*.
+- Barnes, B., Parsa, M., Das, S., & Clark, R. (2025). *Hypergeometric and Binomial Group Sampling with Sensitivity and Specificity*. Submitted to *Communications in Statistics -- Theory and Methods*.
 - Arnold, M. E., Cook, A., & Davies, R. (2005). A modelling approach to estimate the sensitivity of pooled faecal samples for isolation of Salmonella in pigs. *Journal of the Royal Society Interface*, 2(4), 365–372.
 - Theobald, C. M., & Davie, A. M. (2014). Group testing, the pooled hypergeometric distribution, and estimating the number of defectives in small populations. *Communications in Statistics -- Theory and Methods*, 43(14), 3019–3026.
-
