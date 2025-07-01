@@ -9,4 +9,4 @@
 library(testthat)
 library(groupedHG)
 
-test_check("mypackage")
+test_check("groupedHG")
