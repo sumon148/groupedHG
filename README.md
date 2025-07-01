@@ -94,7 +94,7 @@ Below is a minimal illustration. For detailed use cases, refer to the vignette.
 library(groupedHG)
 
 # Compute probability mass function
-pmf <- pmf <- pmf_hg_group_imperfect(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
+pmf <-  pmf_hg_group_imperfect(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 
 pmf
 ```
