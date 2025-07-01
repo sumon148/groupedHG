@@ -93,16 +93,8 @@ Below is a minimal illustration. For detailed use cases, refer to the vignette.
 # Load library
 library(groupedHG)
 
-# Example parameters
-N <- 100
-TX <- 5
-b <- 10
-n_bar <- 5
-Delta <- 0.95
-Lambda <- 0.99
-
 # Compute probability mass function
-pmf <- groupedHG_pmf(N, TX, b, n_bar, Delta, Lambda)
+pmf <- pmf <- pmf_hg_group_imperfect(ty = 3, N = 100, barN = 4, Tx = 20, b = 4, delta = 0.7, lambda = 0.8)
 
 pmf
 ```
