@@ -127,11 +127,3 @@ If you use this package in publications, please cite:
 
 This package is released under the MIT License.
 
----
-
-✅ **Tip:**
-If you want a **shorter installation example**, you can remove the "Install without vignettes" section, but many users appreciate the clarity.
-
----
-
-**Let me know if you’d like help adding badges, more examples, or tweaking formatting!**
