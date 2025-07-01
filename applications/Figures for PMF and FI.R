@@ -574,7 +574,10 @@ FIpmfHG.Tx.imperfect(Tx=0, N = 100, b = 4, barN = 4, delta = 0.7, lambda = 0.8, 
 
 # Compare with MATLAB PMF -----------------------
 
-PMF_MATLAB <- read.csv("C:/Users/u1107832/OneDrive - Australian National University/LP RSFAS SD/HG Belinda Paper/BB Code/PMF_long_format.csv",header=T)
+#PMF_MATLAB <- read.csv("C:/Users/u1107832/OneDrive - Australian National University/LP RSFAS SD/HG Belinda Paper/BB Code/PMF_long_format.csv",header=T)
+# R/xxx.R  (inside the package)
+pmf_path <- system.file("extdata", "PMF_long_format.csv", package = "groupedHG")
+PMF_MATLAB <- read.csv(pmf_path, header = TRUE)
 
 names(PMF_MATLAB)
 
@@ -2441,4 +2444,3 @@ legend("topright",
 
 
 dev.off()
-
