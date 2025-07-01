@@ -1,92 +1,92 @@
-
 # groupedHG
 
-The goal of **groupedHG** is to estimate probability mass function (PMF)
-for grouped hypergeometric distribution considering adjustment for
-sensitivity and specificity of the test. The sensitivity and specificity
-can be considered at the item and group level. In addition to this,
-Fisher Information (FI) of the total number of contaminated items in the
-population (denoted as $T_x$) can be calculated using two alternative
-methods - analytic derivative (AD) and PMF-based. The PMF-based FI
-calculation is based on the Sánchez-Moreno, Yánez and Dehesa (2009)
-work.
+**Grouped Hypergeometric and Binomial Sampling with Sensitivity and Specificity**
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+`groupedHG` is an R package implementing probability mass functions, expectations, variances, and information measures for group sampling processes where detection tests may be imperfect. The package was developed to support research and applications in epidemiology, biosecurity, and quality control, as described in:
+
+> **Barnes, B., Parsa, M., Das, S., & Clark, R. (2024). Hypergeometric and binomial group sampling with sensitivity and specificity.**  
+> *Journal of Applied Statistics*, [DOI/link if available]
+
+The methodology is described in detail in the accompanying paper and supplementary material.
+
+> 📘 **Repository:**  
+> [https://github.com/sumon148/groupedHG](https://github.com/sumon148/groupedHG)
+
+## Overview
+
+Group (pooled) sampling is widely used to detect contamination, infection, or defects while reducing cost and effort compared to individual testing. However, standard models often assume perfect test accuracy. In practice, sensitivity and specificity can vary with contamination levels or group sizes (e.g., dilution effects).
+
+This package provides:
+
+- Analytical distributions for grouped hypergeometric and binomial sampling, incorporating imperfect sensitivity and specificity.
+- Support for **group-level** or **item-level** detection functions, including PCR and serological test models.
+- Functions to compute expectations, variances, and Hellinger (Fisher) information to guide sampling design.
 
 ## Installation
 
-You can install the development version of `groupedHG` like so:
+The package is **not** available on CRAN. Install directly from GitHub using `devtools`:
 
-``` r
-install.packages("devtools")
+```r
+# install.packages("devtools") if needed
 devtools::install_github("sumon148/groupedHG")
 ```
 
-## Example
+## Getting Started
 
-Let assume a population containing $N$ items of which $Tx$ are
-contaminated. We can calculate PMF of having $ty$ contaminated groups of
-size $barN$ after inspecting a sample of $b$ groups as below assuming
-group-level imperfect sensitivity ($\Delta=0.7$) and specificity
-($\Lambda=0.8$).
+For a step-by-step tutorial—including examples, plots, and code to reproduce the main results—please see the **vignette**:
 
-``` r
+```r
+# Load the package
 library(groupedHG)
-b=4
-ty.values <- c(0:b)
-PRty.HG.group <- sapply(ty.values, function(ty) pmfHG.imperfect.group(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8,verbose = FALSE))
-plot(0:b, PRty.HG.group, type = "l", col = "black", xlab=expression(paste("Number of group detections, ", t[y])),
-     ylab = "Probability mass", main = "Grouped Hypergeometric model",lty=2)
-points(0:b,PRty.HG.group,type = "b", pch = 19, col = "black")
+
+# View the vignette
+vignette("groupedHG")
 ```
 
-<img src="man/figures/README-PMF HG Group-1.png" width="100%" />
+The vignette covers:
 
-In the similar way, the PMF can be calculated assuming item-level
-imperfect test as below:
+* Computing probability mass functions under different sensitivity/specificity scenarios.
+* Item-level versus group-level detection.
+* Variance and covariance estimation.
+* Hellinger information to evaluate sampling designs.
+* Example plots and interpretations.
 
-``` r
-PRty.HG.item <- sapply(ty.values, function(ty) pmfHG.imperfect.item(ty, N=100, barN=4, Tx=20, b=b, delta=0.7, lambda=0.8,verbose =FALSE))
-PRty.HG.item
-#> [1] 0.002993711 0.040346066 0.198811210 0.424987223 0.332861789
+## Example (Quick Preview)
+
+Below is a minimal illustration. For detailed use cases, refer to the vignette.
+
+```{r example, eval=TRUE}
+# Load library
+library(groupedHG)
+
+# Example parameters
+N <- 100
+TX <- 5
+b <- 10
+n_bar <- 5
+Delta <- 0.95
+Lambda <- 0.99
+
+# Compute probability mass function
+pmf <- groupedHG_pmf(N, TX, b, n_bar, Delta, Lambda)
+
+pmf
 ```
+## Methods
 
-Expectation and variance of the grouped HG distribution for the number
-of contaminated groups can be obtained as below:
+The package implements the analytical results described in:
 
-``` r
-ExpVarHG.imperfect.item <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=0.70, lambda=0.8,type="item")
-ExpVarHG.imperfect.item$expectation
-#> [1] 3.044377
-ExpVarHG.imperfect.item$variance
-#> [1] 0.7180313
+* Barnes et al. (2025). *Hypergeometric and binomial group sampling with sensitivity and specificity*. 
 
-ExpVarHG.perfect.group <- ExpVarHG.imperfect(N=100, Tx=20, barN=4, b=4, delta=1, lambda=1,type="group")
-ExpVarHG.perfect.group$expectation
-#> [1] 2.386647
-ExpVarHG.perfect.group$variance
-#> [1] 0.8797255
-```
+## Citation
 
-The Fisher Information for the number of contaminated items in the
-population $T_x$ can be calculated as below assuming group and item
-level imperfect sensitivity and specificity:
+If you use this package in publications, please cite:
 
-``` r
-Tx_values <- c(0:80)
-# Different cases: Item level sensitivity
-FI_case1_AD_Based_group <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "group",verbose=FALSE))
-FI_case1_AD_Based_Item <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "AD", type = "item",verbose=FALSE))
-plot(Tx_values, FI_case1_AD_Based_group, type = "l", col = "black", xlab=expression(paste("Number of Contaminated Items, ", T[x])),
-     ylab = "Fisher Information: Hypergeometric", main = "FI under HG: Group and item level imperfect test",lty=2)
-lines(Tx_values,FI_case1_AD_Based_Item,type = "l", lty = 2, col = "blue")
-legend("topright",legend=c("Group","Item"),col=c("black","blue"),lty=c(1,2),bty = "n")
-```
+Barnes, B., Parsa, M., Das, S., & Clark, R. (2025). *Hypergeometric and binomial group sampling with sensitivity and specificity*. 
 
-<img src="man/figures/README-FI Item-1.png" width="100%" />
+## License
 
-## Reference
+This package is released under the MIT License.
 
-Sánchez-Moreno, P., Yánez, R. J., & Dehesa, J. S. (2009, October).
-Discrete densities and Fisher information. In Proceedings of the 14th
-International Conference on Difference Equations and Applications.
-Difference Equations and Applications. Istanbul, Turkey: Bahçesehir
-University Press (pp. 291-298).
