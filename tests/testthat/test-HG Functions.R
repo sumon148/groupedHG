@@ -4,5 +4,5 @@ test_that("multiplication works", {
 
 
 test_that("PMF HG function works", {
-  pmfHG.perfect(ty = 0, N = 100, barN = 4, Tx = 20, b = 4)
+  pmf_hg_perfect(ty = 0, N = 100, barN = 4, Tx = 20, b = 4)
 })
