@@ -120,7 +120,7 @@ The package implements the analytical results described in:
 
 If you use this package in publications, please cite:
 
-* Barnes, B., Parsa, M., Das, S., & Clark, R. (2025). Hypergeometric and binomial group sampling with sensitivity and specificity. *Communications in Statistics – Theory and Methods* (under review).
+* Barnes, B., Parsa, M., Das, S., & Clark, R. (2025). *groupedHG*: R package implementing hypergeometric and binomial group sampling methods with imperfect tests. Version 0.1.0. https://github.com/sumon148/groupedHG
 
 
 ## License
