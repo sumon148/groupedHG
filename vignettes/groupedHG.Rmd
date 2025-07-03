@@ -21,13 +21,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(groupedHG)
-library(ggplot2)
-library(ggpubr)
-```
-
-# Introduction
 
 # Introduction
 
@@ -55,6 +48,14 @@ You can install the development version of `groupedHG` as below.
 install.packages("devtools")
 devtools::install_github("sumon148/groupedHG")
 ```
+
+
+```{r setup}
+library(groupedHG)
+library(ggplot2)
+library(ggpubr)
+```
+
 
 # Mathematical Background
 
@@ -93,6 +94,8 @@ The following equations from the Barnes et al. (2025) form the statistical found
 - **Equation (16):** Binomial approximation with group-level imperfections  
 - **Equation (17):** Binomial approximation with item-level imperfections  
 - **Equation (20):** Hellinger information computed from the PMF with respect to the considered distribution
+
+
 
 
 # Basic Usage of HG modeling
