@@ -92,7 +92,7 @@ legend("topleft",
          bquote(Imperfect ~ D[delta]),
          bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
          bquote(Imperfect ~ D[Delta]),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+         bquote(Imperfect ~ D[Delta] ~ "," ~ G[L])
        ),
        col = c("black", "blue", "blue", "red", "red"),
        lty = c(1, 2, 3, 2, 3),
@@ -123,7 +123,7 @@ legend("topleft",
          bquote(Imperfect ~ D[delta] ),
          bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
          bquote(Imperfect ~ D[Delta] ),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+         bquote(Imperfect ~ D[Delta] ~ "," ~ G[L])
        ),
        col = c("black","blue", "blue", "red", "red"),
        lty = c(1,2,3,2,3),
@@ -151,7 +151,7 @@ legend(70,0.085,
          bquote(Imperfect ~ D[delta] ),
          bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
          bquote(Imperfect ~ D[Delta] ),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+         bquote(Imperfect ~ D[Delta] ~ "," ~ G[L])
        ),
        col = c("black","blue", "blue", "red", "red"),
        lty = c(1,1,2,1,2),
@@ -179,7 +179,7 @@ legend(70,0.075,
          bquote(Imperfect ~ D[delta] ),
          bquote(Imperfect ~ D[delta] ~ "," ~ G[lambda]),
          bquote(Imperfect ~ D[Delta] ),
-         bquote(Imperfect ~ D[Delta] ~ "," ~ G[Lambda])
+         bquote(Imperfect ~ D[Delta] ~ "," ~ G[L])
        ),
        col = c("black","blue", "blue", "red", "red"),
        lty = c(1,1,2,1,2),
