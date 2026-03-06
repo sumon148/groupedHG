@@ -49,7 +49,7 @@ fisher_results_HG_PMF <- lapply(seq_along(barN), function(i) {
 
 
 
-png("Paper Figures/Figure 2.png",width = 8,height = 6,units = "in", res = 300)
+# png("Paper Figures/Figure 2.png",width = 8,height = 6,units = "in", res = 300)
 
 
 # Define colors for each barN

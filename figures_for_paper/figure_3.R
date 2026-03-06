@@ -236,7 +236,7 @@ Tx_51_BN <- ggplot(combinations_BN_Tx_51, aes(x = barN, y = b, fill = HI_BN_Tx_5
 
 ggarrange(Tx_9_HG,Tx_9_BN,Tx_15_HG,Tx_15_BN,Tx_51_HG,Tx_51_BN,ncol = 2,nrow = 3)
 
-ggsave("Paper Figures/Figure 3.png",width = 8,height = 12,units = "in",dpi = 300)
+# ggsave("Paper Figures/Figure 3.png",width = 8,height = 12,units = "in",dpi = 300)
 
 
 # Draw the Plots : In Standard Error Format -----------------#
@@ -425,7 +425,7 @@ Tx_51_BN <- ggplot(combinations_BN_Tx_51, aes(x = barN, y = b, fill = SE_BN_Tx_5
 
 ggarrange(Tx_9_HG,Tx_9_BN,Tx_15_HG,Tx_15_BN,Tx_51_HG,Tx_51_BN,ncol = 2,nrow = 3)
 
-ggsave("Paper Figures/Figure 3 Updated.png",width = 8,height = 12,units = "in",dpi = 300)
+# ggsave("Paper Figures/Figure 3 Updated.png",width = 8,height = 12,units = "in",dpi = 300)
 
 
 

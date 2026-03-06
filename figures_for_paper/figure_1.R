@@ -1,4 +1,3 @@
-# Paper Figure 1 -----------------------
 library(groupedHG)
 
 N <- 100  # Total population size
@@ -42,30 +41,31 @@ PRtydeltalambda.BN <- sapply(ty.values, function(ty) pmf_bn_item_imperfect(ty, T
 # FI: Grouped-HG model for Tx : 0 - N
 Tx_values <- c(0:100)
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
-FI_case2_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
-FI_case4_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
+FI_case1_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item")$FI_Tx)
+FI_case2_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item")$FI_Tx)
+FI_case4_PMF_Based_Item_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item")$FI_Tx)
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
-FI_case2_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
-FI_case4_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) FIpmfHG.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
+FI_case1_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group")$FI_Tx)
+FI_case2_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group")$FI_Tx)
+FI_case4_PMF_Based_Group_HG <- sapply(Tx_values, function(Tx) info_hg_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group")$FI_Tx)
 
 
 # FI: Grouped-BN model for Tx : 0 - N
 # Different cases: Item level sensitivity
-FI_case1_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
-FI_case2_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
-FI_case4_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
+FI_case1_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case2_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "item"))
+FI_case4_PMF_Based_Item_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "item"))
 # Different cases: Group level sensitivity
-FI_case1_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
-FI_case2_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
-FI_case4_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) FIpmfBN.Tx.imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
+FI_case1_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=1.0, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case2_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=1.0, method = "PMF-HI", type = "group"))
+FI_case4_PMF_Based_Group_BN <- sapply(Tx_values, function(Tx) info_bn_tx_imperfect(Tx, N=100, b=4, barN=4, delta=0.7, lambda=0.8, method = "PMF-HI", type = "group"))
 
 
 
 
+# png("Paper Figures/Figue 1.png",width = 10,height = 8,units = "in", res = 300)
 
-png("Paper Figures/Figue 1.png",width = 10,height = 8,units = "in", res = 300)
+png("Figue 1.png",width = 10,height = 8,units = "in", res = 300)
 par(mfrow=c(2,2))
 
 range_pr_ty <- range(PRty.HG.group,PRtyDelta.HG,PRtyDeltaLambda.HG,PRtydelta.HG,PRtydeltalambda.HG)
@@ -132,7 +132,7 @@ legend("topleft",
        cex = 0.8) # Adjust text size
 
 
-FI_Range <- range(FI_case1_PMF_Based_Item_HG,FI_case2_PMF_Based_Item_HG,FI_case4_PMF_Based_Item_HG,
+FI_Range <- range(c(FI_case1_PMF_Based_Item_HG),FI_case2_PMF_Based_Item_HG,FI_case4_PMF_Based_Item_HG,
                   FI_case1_PMF_Based_Group_HG,FI_case2_PMF_Based_Group_HG,FI_case4_PMF_Based_Group_HG)
 
 plot(Tx_values, FI_case1_PMF_Based_Item_HG, type = "l", col = "black", lwd = 1, ylim = FI_Range,lty=1,
