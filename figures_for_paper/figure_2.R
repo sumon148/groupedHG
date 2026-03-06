@@ -51,6 +51,7 @@ fisher_results_HG_PMF <- lapply(seq_along(barN), function(i) {
 
 # png("Paper Figures/Figure 2.png",width = 8,height = 6,units = "in", res = 300)
 
+png("Figure 2.png",width = 8,height = 6,units = "in", res = 300)
 
 # Define colors for each barN
 colors <- c("black", "blue", "green", "purple", "orange")  # Unique colors for each group size
